@@ -1,0 +1,1141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Chatbot | TravelBuddy</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800&family=Playfair+Display:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #3498db;
+            --secondary: #2ecc71;
+            --dark: #2c3e50;
+            --light: #f8f9fa;
+            --danger: #e74c3c;
+            --warning: #f39c12;
+            --info: #1abc9c;
+            --transition: all 0.3s ease;
+        }
+
+        body {
+            font-family: 'Montserrat', sans-serif;
+            color: #333;
+            line-height: 1.6;
+            overflow-x: hidden;
+            padding-top: 72px;
+        }
+
+        h1, h2, h3, h4, h5 {
+            font-family: 'Playfair Display', serif;
+            font-weight: 700;
+        }
+
+        a {
+            text-decoration: none;
+            transition: var(--transition);
+        }
+
+        /* Navbar */
+        .navbar {
+            background: rgba(44, 62, 80, 0.95);
+            padding: 15px 0;
+            transition: var(--transition);
+            backdrop-filter: blur(10px);
+        }
+
+        .navbar.scrolled {
+            padding: 10px 0;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .navbar-brand {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: white;
+            display: flex;
+            align-items: center;
+        }
+
+        .logo {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 10px;
+            overflow: hidden;
+            border: 2px solid white;
+        }
+
+        .logo img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .nav-link {
+            font-weight: 500;
+            padding: 10px 15px !important;
+            color: rgba(255, 255, 255, 0.8) !important;
+            border-radius: 50px;
+            transition: var(--transition);
+        }
+
+        .nav-link:hover, .nav-link.active {
+            color: white !important;
+            background: rgba(255, 255, 255, 0.1);
+            transform: translateY(-2px);
+        }
+
+        /* Buttons */
+        .btn-gradient {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            border: none;
+            color: white;
+            font-weight: 600;
+            padding: 12px 30px;
+            border-radius: 50px;
+            transition: var(--transition);
+            position: relative;
+            overflow: hidden;
+            z-index: 1;
+        }
+
+        .btn-gradient:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px rgba(52, 152, 219, 0.3);
+        }
+
+        .btn-gradient:before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, var(--secondary), var(--primary));
+            opacity: 0;
+            z-index: -1;
+            transition: var(--transition);
+        }
+
+        .btn-gradient:hover:before {
+            opacity: 1;
+        }
+
+        /* Hero Section */
+        .chatbot-hero {
+            background: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.7)), url('./image/AI.png');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            color: white;
+            padding: 150px 0 100px;
+            position: relative;
+            min-height: 70vh;
+            display: flex;
+            align-items: center;
+            text-align: center;
+        }
+
+        .chatbot-hero-title {
+            font-size: 3.5rem;
+            margin-bottom: 20px;
+            line-height: 1.2;
+            text-shadow: 2px 2px 8px rgba(0,0,0,0.5);
+            animation: fadeInUp 1s ease-out;
+        }
+
+        .chatbot-hero-title span {
+            color: var(--secondary);
+            background: linear-gradient(45deg, var(--secondary), var(--primary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .chatbot-hero-subtitle {
+            font-size: 1.4rem;
+            margin-bottom: 40px;
+            opacity: 0.9;
+            max-width: 700px;
+            margin-left: auto;
+            margin-right: auto;
+            animation: fadeInUp 1s ease-out 0.3s both;
+        }
+
+        .breadcrumb {
+            background: transparent;
+            justify-content: center;
+            margin-bottom: 0;
+        }
+
+        .breadcrumb-item a {
+            color: rgba(255, 255, 255, 0.8);
+        }
+
+        .breadcrumb-item.active {
+            color: white;
+        }
+
+        /* Sections */
+        .section {
+            padding: 100px 0;
+        }
+
+        .section-title {
+            position: relative;
+            padding-bottom: 15px;
+            margin-bottom: 50px;
+            text-align: center;
+            font-size: 2.5rem;
+        }
+
+        .section-title:after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80px;
+            height: 4px;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            border-radius: 3px;
+        }
+
+        /* Chatbot Section */
+        .chatbot-section {
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+        }
+
+        .chatbot-container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 15px 50px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            height: 600px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .chatbot-header {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            padding: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .chatbot-info {
+            display: flex;
+            align-items: center;
+        }
+
+        .chatbot-avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 15px;
+            font-size: 1.5rem;
+            color: var(--primary);
+        }
+
+        .chatbot-status {
+            display: flex;
+            align-items: center;
+            font-size: 0.9rem;
+        }
+
+        .status-indicator {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: var(--secondary);
+            margin-right: 8px;
+            animation: pulse 2s infinite;
+        }
+
+        .chatbot-messages {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .message {
+            max-width: 80%;
+            padding: 15px;
+            border-radius: 15px;
+            position: relative;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .message.bot {
+            align-self: flex-start;
+            background: #f1f3f5;
+            border-top-left-radius: 0;
+        }
+
+        .message.user {
+            align-self: flex-end;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            border-top-right-radius: 0;
+        }
+
+        .message-time {
+            font-size: 0.7rem;
+            opacity: 0.7;
+            margin-top: 5px;
+            text-align: right;
+        }
+
+        .message.user .message-time {
+            text-align: left;
+        }
+
+        .chatbot-input {
+            padding: 20px;
+            border-top: 1px solid #e9ecef;
+            display: flex;
+            gap: 10px;
+        }
+
+        .chatbot-input input {
+            flex: 1;
+            border: 1px solid #e9ecef;
+            border-radius: 50px;
+            padding: 12px 20px;
+            outline: none;
+            transition: var(--transition);
+        }
+
+        .chatbot-input input:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 0.2rem rgba(52, 152, 219, 0.25);
+        }
+
+        .chatbot-input button {
+            background: var(--primary);
+            color: white;
+            border: none;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: var(--transition);
+        }
+
+        .chatbot-input button:hover {
+            background: var(--secondary);
+            transform: scale(1.05);
+        }
+
+        .quick-actions {
+            padding: 15px 20px;
+            border-top: 1px solid #e9ecef;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .quick-action {
+            background: white;
+            border: 1px solid #e9ecef;
+            border-radius: 50px;
+            padding: 8px 15px;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .quick-action:hover {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+
+        /* Features Section */
+        .features-section {
+            background: var(--dark);
+            color: white;
+        }
+
+        .feature-card {
+            text-align: center;
+            padding: 40px 25px;
+            border-radius: 15px;
+            transition: var(--transition);
+            background: rgba(255, 255, 255, 0.05);
+            height: 100%;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .feature-card:hover {
+            transform: translateY(-10px);
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .feature-icon {
+            width: 80px;
+            height: 80px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(255, 255, 255, 0.1);
+            color: var(--secondary);
+            border-radius: 50%;
+            margin: 0 auto 25px;
+            font-size: 2rem;
+            transition: var(--transition);
+        }
+
+        .feature-card:hover .feature-icon {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            transform: rotate(15deg) scale(1.1);
+        }
+
+        /* How It Works */
+        .how-it-works-section {
+            background: linear-gradient(135deg, #f0f8ff 0%, #e6f7ff 100%);
+        }
+
+        .step-card {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            text-align: center;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.05);
+            height: 100%;
+            transition: var(--transition);
+        }
+
+        .step-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+        }
+
+        .step-number {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px;
+            font-weight: 700;
+            font-size: 1.5rem;
+        }
+
+        /* Testimonials */
+        .testimonial-card {
+            background: white;
+            padding: 40px 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.05);
+            height: 100%;
+            position: relative;
+            transition: var(--transition);
+        }
+
+        .testimonial-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .testimonial-card:before {
+            content: '"';
+            position: absolute;
+            top: 20px;
+            left: 30px;
+            font-size: 5rem;
+            color: rgba(52, 152, 219, 0.1);
+            font-family: Georgia, serif;
+            line-height: 1;
+        }
+
+        .testimonial-img {
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin-right: 20px;
+            border: 3px solid var(--primary);
+            transition: var(--transition);
+        }
+
+        .testimonial-card:hover .testimonial-img {
+            transform: scale(1.1);
+            border-color: var(--secondary);
+        }
+
+        /* CTA Section */
+        .cta-section {
+            background: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), url('./image/other.png');
+            background-size: cover;
+            background-position: center;
+            color: white;
+            text-align: center;
+            padding: 120px 0;
+        }
+
+        /* Footer */
+        .footer {
+            background: var(--dark);
+            color: white;
+            padding: 80px 0 0;
+        }
+
+        .footer-title {
+            position: relative;
+            padding-bottom: 15px;
+            margin-bottom: 25px;
+            color: white;
+        }
+
+        .footer-title:after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 50px;
+            height: 3px;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            border-radius: 3px;
+        }
+
+        .footer-links li {
+            margin-bottom: 12px;
+            list-style: none;
+        }
+
+        .footer-links a {
+            color: rgba(255, 255, 255, 0.7);
+            transition: var(--transition);
+        }
+
+        .footer-links a:hover {
+            color: white;
+            padding-left: 5px;
+        }
+
+        .social-links {
+            display: flex;
+            gap: 15px;
+        }
+
+        .social-links a {
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: var(--transition);
+            font-size: 1.2rem;
+        }
+
+        .social-links a:hover {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            transform: translateY(-5px);
+        }
+
+        .copyright {
+            background: rgba(0, 0, 0, 0.2);
+            padding: 25px 0;
+            margin-top: 60px;
+            text-align: center;
+        }
+
+        /* Animations */
+        .animate-on-scroll {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 0.8s ease;
+        }
+
+        .animate-on-scroll.animated {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Keyframe Animations */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+
+        @keyframes pulse {
+            0% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.05);
+            }
+            100% {
+                transform: scale(1);
+            }
+        }
+
+        /* Responsive */
+        @media (max-width: 992px) {
+            .chatbot-hero-title {
+                font-size: 3rem;
+            }
+            
+            .section {
+                padding: 80px 0;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .navbar-brand {
+                font-size: 1.5rem;
+            }
+            
+            .chatbot-hero {
+                padding: 120px 0 80px;
+            }
+            
+            .chatbot-hero-title {
+                font-size: 2.5rem;
+            }
+            
+            .chatbot-hero-subtitle {
+                font-size: 1.2rem;
+            }
+            
+            .section {
+                padding: 60px 0;
+            }
+            
+            .section-title {
+                font-size: 2rem;
+            }
+            
+            .message {
+                max-width: 90%;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .chatbot-hero-title {
+                font-size: 2rem;
+            }
+            
+            .chatbot-hero-subtitle {
+                font-size: 1rem;
+            }
+            
+            .btn-gradient {
+                padding: 10px 25px;
+            }
+            
+            .chatbot-container {
+                height: 500px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation Bar -->
+    <nav class="navbar navbar-expand-lg navbar-dark fixed-top">
+        <div class="container">
+            <a class="navbar-brand" href="index.html">
+                <div class="logo">
+                    <img src="./image/logo.png" alt="TravelBuddy Logo">
+                </div>
+                TravelBuddy
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item"><a class="nav-link" href="index.html">Home</a></li>
+                    <li class="nav-item"><a class="nav-link" href="about.html">About</a></li>
+                    <li class="nav-item"><a class="nav-link" href="destinations.html">Destinations</a></li>
+                    <li class="nav-item"><a class="nav-link" href="plan-trip.html">Plan Trip</a></li>                
+                    <li class="nav-item"><a class="nav-link active" href="ai-chatbot.html">AI Chatbot</a></li>
+                    <li class="nav-item"><a class="nav-link" href="contact.html">Contact</a></li>
+                    <li class="nav-item"><a class="nav-link" href="feedback.html">Feedback</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="chatbot-hero">
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="col-lg-10">
+                    <h1 class="chatbot-hero-title">TravelBuddy <span>AI Assistant</span></h1>
+                    <p class="chatbot-hero-subtitle">Get instant travel recommendations, itinerary suggestions, and personalized advice from our intelligent travel assistant</p>
+                    
+                    <nav aria-label="breadcrumb">
+                        <ol class="breadcrumb justify-content-center">
+                            <li class="breadcrumb-item"><a href="index.html">Home</a></li>
+                            <li class="breadcrumb-item active" aria-current="page">AI Chatbot</li>
+                        </ol>
+                    </nav>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- AI Chatbot Section -->
+    <section class="chatbot-section section">
+        <div class="container">
+            <h2 class="section-title">Chat with TravelBuddy AI</h2>
+            <p class="text-center mb-5 lead">Ask anything about travel - destinations, itineraries, budgets, and more</p>
+            
+            <div class="row justify-content-center">
+                <div class="col-lg-10">
+                    <div class="chatbot-container">
+                        <div class="chatbot-header">
+                            <div class="chatbot-info">
+                                <div class="chatbot-avatar">
+                                    <i class="fas fa-robot"></i>
+                                </div>
+                                <div>
+                                    <h4 class="mb-0">TravelBuddy AI</h4>
+                                    <p class="mb-0">Your Personal Travel Assistant</p>
+                                </div>
+                            </div>
+                            <div class="chatbot-status">
+                                <div class="status-indicator"></div>
+                                <span>Online</span>
+                            </div>
+                        </div>
+                        
+                        <div class="chatbot-messages" id="chatMessages">
+                            <div class="message bot">
+                                <p>Hello! I'm TravelBuddy AI, your personal travel assistant. How can I help you plan your next adventure?</p>
+                                <div class="message-time">Just now</div>
+                            </div>
+                            <div class="message bot">
+                                <p>You can ask me about:</p>
+                                <ul>
+                                    <li>Destination recommendations</li>
+                                    <li>Travel itineraries</li>
+                                    <li>Budget planning</li>
+                                    <li>Best times to visit</li>
+                                    <li>Local attractions and activities</li>
+                                </ul>
+                                <div class="message-time">Just now</div>
+                            </div>
+                        </div>
+                        
+                        <div class="quick-actions">
+                            <div class="quick-action" data-question="Recommend a beach destination">Beach destinations</div>
+                            <div class="quick-action" data-question="Plan a 5-day trip to Europe">Europe trip</div>
+                            <div class="quick-action" data-question="Budget travel tips">Budget tips</div>
+                            <div class="quick-action" data-question="Best time to visit Bali">Bali season</div>
+                        </div>
+                        
+                        <div class="chatbot-input">
+                            <input type="text" id="messageInput" placeholder="Type your message here...">
+                            <button id="sendMessage">
+                                <i class="fas fa-paper-plane"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section class="features-section section">
+        <div class="container">
+            <h2 class="section-title">Why Use TravelBuddy AI</h2>
+            <p class="text-center mb-5 lead">Our AI assistant makes travel planning easier than ever</p>
+            
+            <div class="row g-4">
+                <div class="col-md-6 col-lg-4 animate-on-scroll">
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-clock"></i>
+                        </div>
+                        <h4>24/7 Availability</h4>
+                        <p>Get travel advice anytime, anywhere. Our AI assistant is always ready to help with your travel questions.</p>
+                    </div>
+                </div>
+                
+                <div class="col-md-6 col-lg-4 animate-on-scroll">
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-lightbulb"></i>
+                        </div>
+                        <h4>Personalized Recommendations</h4>
+                        <p>Receive tailored suggestions based on your preferences, budget, and travel style.</p>
+                    </div>
+                </div>
+                
+                <div class="col-md-6 col-lg-4 animate-on-scroll">
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-bolt"></i>
+                        </div>
+                        <h4>Instant Responses</h4>
+                        <p>No more waiting for answers. Get immediate travel advice and information.</p>
+                    </div>
+                </div>
+                
+                <div class="col-md-6 col-lg-4 animate-on-scroll">
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-globe"></i>
+                        </div>
+                        <h4>Global Knowledge</h4>
+                        <p>Access information about thousands of destinations worldwide with up-to-date details.</p>
+                    </div>
+                </div>
+                
+                <div class="col-md-6 col-lg-4 animate-on-scroll">
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-money-bill-wave"></i>
+                        </div>
+                        <h4>Budget Planning</h4>
+                        <p>Get accurate cost estimates and money-saving tips for your dream vacation.</p>
+                    </div>
+                </div>
+                
+                <div class="col-md-6 col-lg-4 animate-on-scroll">
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="fas fa-map-marked-alt"></i>
+                        </div>
+                        <h4>Itinerary Creation</h4>
+                        <p>Generate detailed day-by-day itineraries based on your interests and time constraints.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- How It Works Section -->
+    <section class="how-it-works-section section">
+        <div class="container">
+            <h2 class="section-title">How TravelBuddy AI Works</h2>
+            <p class="text-center mb-5 lead">Three simple steps to get personalized travel advice</p>
+            
+            <div class="row g-4">
+                <div class="col-md-4 animate-on-scroll">
+                    <div class="step-card">
+                        <div class="step-number">1</div>
+                        <h4>Ask Your Question</h4>
+                        <p>Type your travel-related question in simple, natural language. You can ask about destinations, itineraries, budgets, or anything else travel-related.</p>
+                    </div>
+                </div>
+                
+                <div class="col-md-4 animate-on-scroll">
+                    <div class="step-card">
+                        <div class="step-number">2</div>
+                        <h4>AI Processes Request</h4>
+                        <p>Our advanced AI analyzes your question, understands your intent, and searches through millions of data points to find the best answers.</p>
+                    </div>
+                </div>
+                
+                <div class="col-md-4 animate-on-scroll">
+                    <div class="step-card">
+                        <div class="step-number">3</div>
+                        <h4>Get Personalized Response</h4>
+                        <p>Receive a detailed, personalized response with recommendations, tips, and actionable advice tailored to your specific needs.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Testimonials -->
+    <section class="section">
+        <div class="container">
+            <h2 class="section-title">What Travelers Say</h2>
+            <p class="text-center mb-5 lead">See how our AI assistant has helped travelers plan their perfect trips</p>
+            
+            <div class="row g-4">
+                <div class="col-md-6 col-lg-4 animate-on-scroll">
+                    <div class="testimonial-card">
+                        <div class="d-flex align-items-center mb-4">
+                            <img src="./image/humans (1).jpeg" class="testimonial-img" alt="Sarah Johnson">
+                            <div>
+                                <h5 class="mb-0">Sarah Johnson</h5>
+                                <p class="text-muted mb-0">Used AI for Bali Trip</p>
+                            </div>
+                        </div>
+                        <p class="mb-0">"The AI assistant helped me create the perfect Bali itinerary in minutes! It suggested hidden gems I would never have found on my own."</p>
+                    </div>
+                </div>
+                
+                <div class="col-md-6 col-lg-4 animate-on-scroll">
+                    <div class="testimonial-card">
+                        <div class="d-flex align-items-center mb-4">
+                            <img src="./image/humans (2).jpeg" class="testimonial-img" alt="Michael Chen">
+                            <div>
+                                <h5 class="mb-0">Michael Chen</h5>
+                                <p class="text-muted mb-0">Used AI for Europe Trip</p>
+                            </div>
+                        </div>
+                        <p class="mb-0">"I was overwhelmed planning my 3-week Europe trip. The AI assistant broke it down into manageable chunks and saved me hours of research!"</p>
+                    </div>
+                </div>
+                
+                <div class="col-md-6 col-lg-4 animate-on-scroll">
+                    <div class="testimonial-card">
+                        <div class="d-flex align-items-center mb-4">
+                            <img src="./image/huma 1.jpeg" class="testimonial-img" alt="Priya Patel">
+                            <div>
+                                <h5 class="mb-0">Priya Patel</h5>
+                                <p class="text-muted mb-0">Used AI for Budget Planning</p>
+                            </div>
+                        </div>
+                        <p class="mb-0">"The budget planning feature was incredibly accurate. I stayed within my budget and still had an amazing luxury experience in Dubai."</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="cta-section">
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="col-lg-8 text-center">
+                    <h2 class="display-4 fw-bold mb-4">Ready to Plan Your Next Adventure?</h2>
+                    <p class="lead mb-5">Start a conversation with our AI assistant and get personalized travel advice instantly</p>
+                    <a href="#chatMessages" class="btn btn-gradient btn-lg me-3">Chat Now</a>
+                    <a href="destinations.html" class="btn btn-outline-light btn-lg">Explore Destinations</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-4 col-md-6 mb-5">
+                    <h3 class="footer-title">About TravelBuddy</h3>
+                    <p class="mb-4">Your trusted companion for unforgettable journeys around the world. We provide personalized travel experiences with cutting-edge technology and premium service.</p>
+                    <div class="social-links">
+                        <a href="#"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#"><i class="fab fa-twitter"></i></a>
+                        <a href="#"><i class="fab fa-instagram"></i></a>
+                        <a href="#"><i class="fab fa-linkedin-in"></i></a>
+                        <a href="#"><i class="fab fa-youtube"></i></a>
+                    </div>
+                </div>
+                <div class="col-lg-2 col-md-6 mb-5">
+                    <h3 class="footer-title">Quick Links</h3>
+                    <ul class="footer-links">
+                        <li><a href="index.html">Home</a></li>
+                        <li><a href="about.html">About</a></li>
+                        <li><a href="destinations.html">Destinations</a></li>
+                        <li><a href="plan-trip.html">Plan Trip</a></li>
+                        <li><a href="ai-chatbot.html">AI Chatbot</a></li>
+                        <li><a href="contact.html">Contact</a></li>
+                    </ul>
+                </div>
+                <div class="col-lg-3 col-md-6 mb-5">
+                    <h3 class="footer-title">Popular Destinations</h3>
+                    <ul class="footer-links">
+                        <li><a href="#">Dubai, UAE</a></li>
+                        <li><a href="#">Istanbul, Turkey</a></li>
+                        <li><a href="#">Maldives</a></li>
+                        <li><a href="#">Bali, Indonesia</a></li>
+                        <li><a href="#">Paris, France</a></li>
+                        <li><a href="#">Swat Valley, Pakistan</a></li>
+                    </ul>
+                </div>
+                <div class="col-lg-3 col-md-6 mb-5">
+                    <h3 class="footer-title">Newsletter</h3>
+                    <p class="mb-4">Subscribe for travel updates, exclusive offers, and destination guides.</p>
+                    <form>
+                        <div class="input-group mb-3">
+                            <input type="email" class="form-control" placeholder="Your Email" required>
+                            <button class="btn btn-gradient" type="submit">Subscribe</button>
+                        </div>
+                    </form>
+                    <p class="small mt-3">By subscribing, you agree to our Privacy Policy</p>
+                </div>
+            </div>
+        </div>
+        <div class="copyright">
+            <div class="container">
+                <div class="row">
+                    <div class="col-md-6 text-center text-md-start">
+                        <p>&copy; 2023 TravelBuddy. All Rights Reserved.</p>
+                    </div>
+                    <div class="col-md-6 text-center text-md-end">
+                        <p><a href="#" class="text-white-50">Privacy Policy</a> | <a href="#" class="text-white-50">Terms of Service</a></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Navbar scroll effect
+        window.addEventListener('scroll', function() {
+            const navbar = document.querySelector('.navbar');
+            if (window.scrollY > 50) {
+                navbar.classList.add('scrolled');
+            } else {
+                navbar.classList.remove('scrolled');
+            }
+        });
+        
+        // Scroll animation
+        function animateOnScroll() {
+            const elements = document.querySelectorAll('.animate-on-scroll');
+            
+            elements.forEach(element => {
+                const elementTop = element.getBoundingClientRect().top;
+                const elementVisible = 150;
+                
+                if (elementTop < window.innerHeight - elementVisible) {
+                    element.classList.add('animated');
+                }
+            });
+        }
+        
+        // Initialize animations
+        window.addEventListener('scroll', animateOnScroll);
+        window.addEventListener('load', animateOnScroll);
+        
+        // Chatbot functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            const chatMessages = document.getElementById('chatMessages');
+            const messageInput = document.getElementById('messageInput');
+            const sendMessage = document.getElementById('sendMessage');
+            const quickActions = document.querySelectorAll('.quick-action');
+            
+            // Function to add a message to the chat
+            function addMessage(text, isUser = false) {
+                const messageDiv = document.createElement('div');
+                messageDiv.className = `message ${isUser ? 'user' : 'bot'}`;
+                
+                const messageContent = document.createElement('p');
+                messageContent.textContent = text;
+                messageDiv.appendChild(messageContent);
+                
+                const messageTime = document.createElement('div');
+                messageTime.className = 'message-time';
+                messageTime.textContent = 'Just now';
+                messageDiv.appendChild(messageTime);
+                
+                chatMessages.appendChild(messageDiv);
+                chatMessages.scrollTop = chatMessages.scrollHeight;
+                
+                // If it's a user message, generate a bot response after a delay
+                if (isUser) {
+                    setTimeout(() => {
+                        generateBotResponse(text);
+                    }, 1000);
+                }
+            }
+            
+            // Function to generate bot responses
+            function generateBotResponse(userMessage) {
+                let response = '';
+                
+                // Simple response logic based on keywords in the user message
+                if (userMessage.toLowerCase().includes('hello') || userMessage.toLowerCase().includes('hi')) {
+                    response = "Hello! I'm TravelBuddy AI. How can I assist with your travel plans today?";
+                } else if (userMessage.toLowerCase().includes('beach') || userMessage.toLowerCase().includes('coastal')) {
+                    response = "For beautiful beach destinations, I'd recommend:\n\n• Maldives - Crystal clear waters and luxury resorts\n• Bali, Indonesia - Vibrant culture and stunning beaches\n• Phuket, Thailand - Lively beaches and great food\n• Santorini, Greece - Iconic white buildings with blue domes\n\nWhich type of beach experience are you looking for?";
+                } else if (userMessage.toLowerCase().includes('europe') || userMessage.toLowerCase().includes('european')) {
+                    response = "Europe offers diverse experiences! For a 5-day trip, I'd suggest:\n\n• Paris & London - Iconic cities with rich history\n• Rome & Florence - Art, history, and amazing food\n• Amsterdam & Brussels - Canals, culture, and chocolate\n• Barcelona & Madrid - Vibrant cities with unique architecture\n\nWhat's your budget and interests?";
+                } else if (userMessage.toLowerCase().includes('budget') || userMessage.toLowerCase().includes('cheap')) {
+                    response = "Here are some budget travel tips:\n\n• Travel during shoulder season for lower prices\n• Consider alternative accommodations like hostels or vacation rentals\n• Use public transportation instead of taxis\n• Eat where locals eat for authentic and affordable meals\n• Look for free activities and attractions\n\nWhat's your destination and budget range?";
+                } else if (userMessage.toLowerCase().includes('bali') || user.toLowerCase().includes('indonesia')) {
+                    response = "Bali is amazing! The best time to visit is during the dry season from April to October. Must-see places include:\n\n• Ubud - Cultural heart with temples and rice terraces\n• Seminyak - Upscale beach area with great dining\n• Uluwatu - Stunning cliffs and surf spots\n• Nusa Islands - Beautiful day trip destinations\n\nHow many days are you planning to stay?";
+                } else {
+                    response = "I'd be happy to help with that! To give you the best recommendations, could you tell me:\n\n• Your destination or type of experience you're looking for\n• Your travel dates or preferred season\n• Your budget range\n• Travel companions (solo, couple, family, friends)\n• Your main interests (culture, adventure, relaxation, food, etc.)";
+                }
+                
+                addMessage(response);
+            }
+            
+            // Send message when button is clicked
+            sendMessage.addEventListener('click', function() {
+                const message = messageInput.value.trim();
+                if (message) {
+                    addMessage(message, true);
+                    messageInput.value = '';
+                }
+            });
+            
+            // Send message when Enter key is pressed
+            messageInput.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    const message = messageInput.value.trim();
+                    if (message) {
+                        addMessage(message, true);
+                        messageInput.value = '';
+                    }
+                }
+            });
+            
+            // Quick action buttons
+            quickActions.forEach(action => {
+                action.addEventListener('click', function() {
+                    const question = this.getAttribute('data-question');
+                    addMessage(question, true);
+                });
+            });
+            
+            // Add loading animation to buttons
+            document.querySelectorAll('.btn-gradient').forEach(button => {
+                button.addEventListener('click', function(e) {
+                    if (this.href === '#' || !this.href) {
+                        e.preventDefault();
+                        const originalText = this.innerHTML;
+                        this.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span> Loading...';
+                        this.disabled = true;
+                        
+                        setTimeout(() => {
+                            this.innerHTML = originalText;
+                            this.disabled = false;
+                        }, 2000);
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>

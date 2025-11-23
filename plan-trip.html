@@ -1,0 +1,2426 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Plan Your Trip | TravelBuddy</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800&family=Playfair+Display:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+    <style>
+        :root {
+            --primary: #3498db;
+            --secondary: #2ecc71;
+            --dark: #2c3e50;
+            --light: #f8f9fa;
+            --danger: #e74c3c;
+            --warning: #f39c12;
+            --info: #1abc9c;
+            --transition: all 0.3s ease;
+        }
+
+        body {
+            font-family: 'Montserrat', sans-serif;
+            color: #333;
+            line-height: 1.6;
+            overflow-x: hidden;
+            padding-top: 72px;
+        }
+
+        h1, h2, h3, h4, h5 {
+            font-family: 'Playfair Display', serif;
+            font-weight: 700;
+        }
+
+        a {
+            text-decoration: none;
+            transition: var(--transition);
+        }
+
+        /* Navbar */
+        .navbar {
+            background: rgba(44, 62, 80, 0.95);
+            padding: 15px 0;
+            transition: var(--transition);
+            backdrop-filter: blur(10px);
+        }
+
+        .navbar.scrolled {
+            padding: 10px 0;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .navbar-brand {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: white;
+            display: flex;
+            align-items: center;
+        }
+
+        .logo {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 10px;
+            overflow: hidden;
+            border: 2px solid white;
+        }
+
+        .logo img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .nav-link {
+            font-weight: 500;
+            padding: 10px 15px !important;
+            color: rgba(255, 255, 255, 0.8) !important;
+            border-radius: 50px;
+            transition: var(--transition);
+        }
+
+        .nav-link:hover, .nav-link.active {
+            color: white !important;
+            background: rgba(255, 255, 255, 0.1);
+            transform: translateY(-2px);
+        }
+
+        /* Buttons */
+        .btn-gradient {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            border: none;
+            color: white;
+            font-weight: 600;
+            padding: 12px 30px;
+            border-radius: 50px;
+            transition: var(--transition);
+            position: relative;
+            overflow: hidden;
+            z-index: 1;
+        }
+
+        .btn-gradient:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px rgba(52, 152, 219, 0.3);
+        }
+
+        .btn-gradient:before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, var(--secondary), var(--primary));
+            opacity: 0;
+            z-index: -1;
+            transition: var(--transition);
+        }
+
+        .btn-gradient:hover:before {
+            opacity: 1;
+        }
+
+        /* Hero Section */
+        .plan-hero {
+            background: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.7)), url("./image/new home pages (1).jpeg");
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            color: white;
+            padding: 150px 0 100px;
+            position: relative;
+            min-height: 70vh;
+            display: flex;
+            align-items: center;
+            text-align: center;
+        }
+
+        .plan-hero-title {
+            font-size: 3.5rem;
+            margin-bottom: 20px;
+            line-height: 1.2;
+            text-shadow: 2px 2px 8px rgba(0,0,0,0.5);
+            animation: fadeInUp 1s ease-out;
+        }
+
+        .plan-hero-title span {
+            color: var(--secondary);
+            background: linear-gradient(45deg, var(--secondary), var(--primary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .plan-hero-subtitle {
+            font-size: 1.4rem;
+            margin-bottom: 40px;
+            opacity: 0.9;
+            max-width: 700px;
+            margin-left: auto;
+            margin-right: auto;
+            animation: fadeInUp 1s ease-out 0.3s both;
+        }
+
+        .hero-buttons {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            flex-wrap: wrap;
+            animation: fadeInUp 1s ease-out 0.6s both;
+        }
+
+        /* Sections */
+        .section {
+            padding: 100px 0;
+        }
+
+        .section-title {
+            position: relative;
+            padding-bottom: 15px;
+            margin-bottom: 50px;
+            text-align: center;
+            font-size: 2.5rem;
+        }
+
+        .section-title:after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80px;
+            height: 4px;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            border-radius: 3px;
+        }
+
+        /* Trip Planner Wizard */
+        .planner-section {
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+        }
+
+        .wizard-container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 15px 50px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+
+        .wizard-header {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .wizard-steps {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 30px;
+        }
+
+        .step {
+            text-align: center;
+            flex: 1;
+            position: relative;
+        }
+
+        .step:not(:last-child):after {
+            content: '';
+            position: absolute;
+            top: 25px;
+            right: -50%;
+            width: 100%;
+            height: 3px;
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        .step.active:not(:last-child):after {
+            background: white;
+        }
+
+        .step-number {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 10px;
+            font-weight: 700;
+            font-size: 1.2rem;
+        }
+
+        .step.active .step-number {
+            background: white;
+            color: var(--primary);
+        }
+
+        .step.completed .step-number {
+            background: white;
+            color: var(--primary);
+        }
+
+        .step-label {
+            font-size: 0.9rem;
+            opacity: 0.8;
+        }
+
+        .step.active .step-label {
+            opacity: 1;
+            font-weight: 600;
+        }
+
+        .wizard-body {
+            padding: 40px;
+        }
+
+        .wizard-step {
+            display: none;
+        }
+
+        .wizard-step.active {
+            display: block;
+            animation: fadeIn 0.5s ease;
+        }
+
+        .wizard-footer {
+            padding: 30px 40px;
+            background: #f8f9fa;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        /* Form Elements */
+        .form-card {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            margin-bottom: 25px;
+            transition: var(--transition);
+        }
+
+        .form-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+        }
+
+        .destination-card {
+            border: 2px solid #e9ecef;
+            border-radius: 10px;
+            padding: 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .destination-card:hover, .destination-card.selected {
+            border-color: var(--primary);
+            background: rgba(52, 152, 219, 0.05);
+        }
+
+        .destination-card.selected {
+            border-color: var(--primary);
+            background: rgba(52, 152, 219, 0.1);
+        }
+
+        .budget-slider {
+            width: 100%;
+            margin: 20px 0;
+        }
+
+        .trip-type-card {
+            border: 2px solid #e9ecef;
+            border-radius: 10px;
+            padding: 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .trip-type-card:hover, .trip-type-card.selected {
+            border-color: var(--primary);
+            background: rgba(52, 152, 219, 0.05);
+        }
+
+        .trip-type-card.selected {
+            border-color: var(--primary);
+            background: rgba(52, 152, 219, 0.1);
+        }
+
+        .trip-type-icon {
+            font-size: 2.5rem;
+            margin-bottom: 15px;
+            color: var(--primary);
+        }
+
+        .activity-checkbox {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+            padding: 15px;
+            border: 1px solid #e9ecef;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .activity-checkbox:hover {
+            border-color: var(--primary);
+            background: rgba(52, 152, 219, 0.05);
+        }
+
+        .activity-checkbox.selected {
+            border-color: var(--primary);
+            background: rgba(52, 152, 219, 0.1);
+        }
+
+        .activity-checkbox input {
+            margin-right: 15px;
+        }
+
+        /* Itinerary Generator */
+        .itinerary-section {
+            background: var(--dark);
+            color: white;
+        }
+
+        .itinerary-card {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 25px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .day-plan {
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .day-plan:last-child {
+            border-bottom: none;
+        }
+
+        .activity-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+            padding: 10px 15px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 8px;
+        }
+
+        .activity-time {
+            width: 80px;
+            font-weight: 600;
+            color: var(--secondary);
+        }
+
+        /* Cost Calculator */
+        .calculator-section {
+            background: linear-gradient(135deg, #f0f8ff 0%, #e6f7ff 100%);
+        }
+
+        .calculator-card {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        .cost-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 15px 0;
+            border-bottom: 1px solid #e9ecef;
+        }
+
+        .cost-total {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary);
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 2px solid var(--primary);
+        }
+
+        /* Popular Packages */
+        .package-card {
+            background: white;
+            border-radius: 15px;
+            overflow: hidden;
+            transition: var(--transition);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.08);
+            height: 100%;
+        }
+
+        .package-card:hover {
+            transform: translateY(-15px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+        }
+
+        .package-card .card-img-top {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            transition: var(--transition);
+        }
+
+        .package-card:hover .card-img-top {
+            transform: scale(1.1);
+        }
+
+        .package-price {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: var(--secondary);
+            color: white;
+            padding: 8px 15px;
+            border-radius: 50px;
+            font-weight: 600;
+            font-size: 1.1rem;
+        }
+
+        /* Map Section */
+        .map-section {
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+        }
+
+        #trip-map {
+            height: 500px;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Booking Summary */
+        .summary-card {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            position: sticky;
+            top: 100px;
+        }
+
+        .summary-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 15px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #e9ecef;
+        }
+
+        /* Testimonials */
+        .testimonial-card {
+            background: white;
+            padding: 40px 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.05);
+            height: 100%;
+            position: relative;
+            transition: var(--transition);
+        }
+
+        .testimonial-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .testimonial-card:before {
+            content: '"';
+            position: absolute;
+            top: 20px;
+            left: 30px;
+            font-size: 5rem;
+            color: rgba(52, 152, 219, 0.1);
+            font-family: Georgia, serif;
+            line-height: 1;
+        }
+
+        .testimonial-img {
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin-right: 20px;
+            border: 3px solid var(--primary);
+            transition: var(--transition);
+        }
+
+        .testimonial-card:hover .testimonial-img {
+            transform: scale(1.1);
+            border-color: var(--secondary);
+        }
+
+        /* Trust Badges */
+        .trust-badges {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            flex-wrap: wrap;
+            margin-top: 50px;
+        }
+
+        .badge-item {
+            text-align: center;
+            max-width: 150px;
+        }
+
+        .badge-icon {
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 15px;
+            color: white;
+            font-size: 1.8rem;
+        }
+
+        /* FAQ */
+        .faq-section {
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+        }
+
+        .faq-card {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 20px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .faq-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+        }
+
+        .faq-question {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-weight: 600;
+        }
+
+        .faq-answer {
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px solid #e9ecef;
+            display: none;
+        }
+
+        .faq-card.active .faq-answer {
+            display: block;
+        }
+
+        /* CTA Section */
+        .cta-section {
+            background: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), url('./image/other.png');
+            background-size: cover;
+            background-position: center;
+            color: white;
+            text-align: center;
+            padding: 120px 0;
+        }
+
+        /* Footer */
+        .footer {
+            background: var(--dark);
+            color: white;
+            padding: 80px 0 0;
+        }
+
+        .footer-title {
+            position: relative;
+            padding-bottom: 15px;
+            margin-bottom: 25px;
+            color: white;
+        }
+
+        .footer-title:after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 50px;
+            height: 3px;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            border-radius: 3px;
+        }
+
+        .footer-links li {
+            margin-bottom: 12px;
+            list-style: none;
+        }
+
+        .footer-links a {
+            color: rgba(255, 255, 255, 0.7);
+            transition: var(--transition);
+        }
+
+        .footer-links a:hover {
+            color: white;
+            padding-left: 5px;
+        }
+
+        .social-links {
+            display: flex;
+            gap: 15px;
+        }
+
+        .social-links a {
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: var(--transition);
+            font-size: 1.2rem;
+        }
+
+        .social-links a:hover {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            transform: translateY(-5px);
+        }
+
+        .copyright {
+            background: rgba(0, 0, 0, 0.2);
+            padding: 25px 0;
+            margin-top: 60px;
+            text-align: center;
+        }
+
+        /* Animations */
+        .animate-on-scroll {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 0.8s ease;
+        }
+
+        .animate-on-scroll.animated {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Keyframe Animations */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+
+        @keyframes pulse {
+            0% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.05);
+            }
+            100% {
+                transform: scale(1);
+            }
+        }
+
+        /* Responsive */
+        @media (max-width: 992px) {
+            .plan-hero-title {
+                font-size: 3rem;
+            }
+            
+            .section {
+                padding: 80px 0;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .navbar-brand {
+                font-size: 1.5rem;
+            }
+            
+            .plan-hero {
+                padding: 120px 0 80px;
+            }
+            
+            .plan-hero-title {
+                font-size: 2.5rem;
+            }
+            
+            .plan-hero-subtitle {
+                font-size: 1.2rem;
+            }
+            
+            .section {
+                padding: 60px 0;
+            }
+            
+            .section-title {
+                font-size: 2rem;
+            }
+            
+            .wizard-steps {
+                flex-wrap: wrap;
+            }
+            
+            .step {
+                flex: 0 0 33.333%;
+                margin-bottom: 15px;
+            }
+            
+            .step:not(:last-child):after {
+                display: none;
+            }
+            
+            .hero-buttons {
+                flex-direction: column;
+                align-items: center;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .plan-hero-title {
+                font-size: 2rem;
+            }
+            
+            .plan-hero-subtitle {
+                font-size: 1rem;
+            }
+            
+            .btn-gradient {
+                padding: 10px 25px;
+            }
+            
+            .wizard-body, .wizard-footer {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation Bar -->
+    <nav class="navbar navbar-expand-lg navbar-dark fixed-top">
+        <div class="container">
+            <a class="navbar-brand" href="index.html">
+                <div class="logo">
+                    <img src="./image/logo.png" alt="TravelBuddy Logo">
+                </div>
+                TravelBuddy
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item"><a class="nav-link" href="index.html">Home</a></li>
+                    <li class="nav-item"><a class="nav-link" href="about.html">About</a></li>
+                    <li class="nav-item"><a class="nav-link" href="destinations.html">Destinations</a></li>
+                    <li class="nav-item"><a class="nav-link active" href="plan-trip.html">Plan Trip</a></li>                
+                    <li class="nav-item"><a class="nav-link" href="ai-chatbot.html">AI Chatbot</a></li>
+                    <li class="nav-item"><a class="nav-link" href="contact.html">Contact</a></li>
+                    <li class="nav-item"><a class="nav-link" href="feedback.html">Feedback</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="plan-hero">
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="col-lg-10">
+                    <h1 class="plan-hero-title">Plan Your <span>Perfect Trip</span></h1>
+                    <p class="plan-hero-subtitle">Customize your itinerary, budget, stay & activities with our advanced trip planner</p>
+                    
+                    <div class="hero-buttons">
+                        <button class="btn btn-gradient btn-lg" id="startPlanningBtn">Start Planning</button>
+                        <a href="#popular-packages" class="btn btn-outline-light btn-lg">Popular Routes</a>
+                        <a href="#cost-calculator" class="btn btn-outline-light btn-lg">Travel Cost Calculator</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Trip Planner Wizard -->
+    <section class="planner-section section" id="trip-planner">
+        <div class="container">
+            <h2 class="section-title">Trip Planner Wizard</h2>
+            <p class="text-center mb-5 lead">Follow these simple steps to create your perfect itinerary</p>
+            
+            <div class="wizard-container">
+                <div class="wizard-header">
+                    <h3 class="mb-4">Plan Your Dream Trip</h3>
+                    <div class="wizard-steps">
+                        <div class="step active" data-step="1">
+                            <div class="step-number">1</div>
+                            <div class="step-label">Destination</div>
+                        </div>
+                        <div class="step" data-step="2">
+                            <div class="step-number">2</div>
+                            <div class="step-label">Dates</div>
+                        </div>
+                        <div class="step" data-step="3">
+                            <div class="step-number">3</div>
+                            <div class="step-label">Budget & Type</div>
+                        </div>
+                        <div class="step" data-step="4">
+                            <div class="step-number">4</div>
+                            <div class="step-label">Accommodation</div>
+                        </div>
+                        <div class="step" data-step="5">
+                            <div class="step-number">5</div>
+                            <div class="step-label">Activities</div>
+                        </div>
+                        <div class="step" data-step="6">
+                            <div class="step-number">6</div>
+                            <div class="step-label">Details</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="wizard-body">
+                    <!-- Step 1: Destination -->
+                    <div class="wizard-step active" id="step-1">
+                        <h4 class="mb-4">Choose Your Destination</h4>
+                        <div class="row">
+                            <div class="col-md-6 mb-4">
+                                <div class="form-card">
+                                    <label class="form-label">Country</label>
+                                    <select class="form-select" id="countrySelect">
+                                        <option value="">Select Country</option>
+                                        <option value="uae">United Arab Emirates</option>
+                                        <option value="turkey">Turkey</option>
+                                        <option value="maldives">Maldives</option>
+                                        <option value="france">France</option>
+                                        <option value="indonesia">Indonesia</option>
+                                        <option value="italy">Italy</option>
+                                        <option value="usa">United States</option>
+                                        <option value="thailand">Thailand</option>
+                                        <option value="japan">Japan</option>
+                                        <option value="australia">Australia</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-6 mb-4">
+                                <div class="form-card">
+                                    <label class="form-label">City</label>
+                                    <select class="form-select" id="citySelect">
+                                        <option value="">Select City</option>
+                                        <!-- Cities will be populated based on country selection -->
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="form-card">
+                            <label class="form-label">Or Search Destination</label>
+                            <div class="input-group">
+                                <input type="text" class="form-control" placeholder="Search destinations...">
+                                <button class="btn btn-gradient">Search</button>
+                            </div>
+                        </div>
+                        
+                        <h5 class="mb-3">Recommended Destinations</h5>
+                        <div class="row">
+                            <div class="col-md-4 mb-3">
+                                <div class="destination-card" data-destination="dubai">
+                                    <h6>Dubai, UAE</h6>
+                                    <p class="text-muted">Luxury & Adventure</p>
+                                </div>
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <div class="destination-card" data-destination="istanbul">
+                                    <h6>Istanbul, Turkey</h6>
+                                    <p class="text-muted">Culture & History</p>
+                                </div>
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <div class="destination-card" data-destination="bali">
+                                    <h6>Bali, Indonesia</h6>
+                                    <p class="text-muted">Beaches & Nature</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Step 2: Dates -->
+                    <div class="wizard-step" id="step-2">
+                        <h4 class="mb-4">Select Travel Dates</h4>
+                        <div class="row">
+                            <div class="col-md-6 mb-4">
+                                <div class="form-card">
+                                    <label class="form-label">Start Date</label>
+                                    <input type="date" class="form-control" id="startDate">
+                                </div>
+                            </div>
+                            <div class="col-md-6 mb-4">
+                                <div class="form-card">
+                                    <label class="form-label">End Date</label>
+                                    <input type="date" class="form-control" id="endDate">
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="form-card">
+                            <label class="form-label">Trip Duration: <span id="tripDuration">0 days</span></label>
+                            <div class="alert alert-info">
+                                <i class="fas fa-info-circle me-2"></i>
+                                <span id="seasonInfo">Select dates to see season information</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Step 3: Budget & Trip Type -->
+                    <div class="wizard-step" id="step-3">
+                        <h4 class="mb-4">Budget & Trip Type</h4>
+                        
+                        <div class="form-card">
+                            <label class="form-label">Budget Range: $<span id="budgetValue">2000</span></label>
+                            <input type="range" class="form-range budget-slider" min="500" max="10000" step="100" value="2000" id="budgetSlider">
+                            <div class="d-flex justify-content-between">
+                                <small>$500</small>
+                                <small>$10,000</small>
+                            </div>
+                        </div>
+                        
+                        <h5 class="mb-3">Select Trip Type</h5>
+                        <div class="row">
+                            <div class="col-md-4 mb-3">
+                                <div class="trip-type-card" data-type="family">
+                                    <div class="trip-type-icon">
+                                        <i class="fas fa-home"></i>
+                                    </div>
+                                    <h6>Family</h6>
+                                </div>
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <div class="trip-type-card" data-type="honeymoon">
+                                    <div class="trip-type-icon">
+                                        <i class="fas fa-heart"></i>
+                                    </div>
+                                    <h6>Honeymoon</h6>
+                                </div>
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <div class="trip-type-card" data-type="solo">
+                                    <div class="trip-type-icon">
+                                        <i class="fas fa-user"></i>
+                                    </div>
+                                    <h6>Solo</h6>
+                                </div>
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <div class="trip-type-card" data-type="adventure">
+                                    <div class="trip-type-icon">
+                                        <i class="fas fa-hiking"></i>
+                                    </div>
+                                    <h6>Adventure</h6>
+                                </div>
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <div class="trip-type-card" data-type="luxury">
+                                    <div class="trip-type-icon">
+                                        <i class="fas fa-crown"></i>
+                                    </div>
+                                    <h6>Luxury</h6>
+                                </div>
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <div class="trip-type-card" data-type="cultural">
+                                    <div class="trip-type-icon">
+                                        <i class="fas fa-monument"></i>
+                                    </div>
+                                    <h6>Cultural</h6>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Step 4: Accommodation -->
+                    <div class="wizard-step" id="step-4">
+                        <h4 class="mb-4">Accommodation Preferences</h4>
+                        
+                        <div class="form-card">
+                            <label class="form-label">Hotel Category</label>
+                            <div class="row">
+                                <div class="col-md-4 mb-3">
+                                    <div class="form-check card p-3">
+                                        <input class="form-check-input" type="radio" name="hotelCategory" id="3star" value="3">
+                                        <label class="form-check-label" for="3star">
+                                            <h6>3 Star</h6>
+                                            <p class="text-muted mb-0">Comfortable & Affordable</p>
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="col-md-4 mb-3">
+                                    <div class="form-check card p-3">
+                                        <input class="form-check-input" type="radio" name="hotelCategory" id="4star" value="4" checked>
+                                        <label class="form-check-label" for="4star">
+                                            <h6>4 Star</h6>
+                                            <p class="text-muted mb-0">Premium Comfort</p>
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="col-md-4 mb-3">
+                                    <div class="form-check card p-3">
+                                        <input class="form-check-input" type="radio" name="hotelCategory" id="5star" value="5">
+                                        <label class="form-check-label" for="5star">
+                                            <h6>5 Star</h6>
+                                            <p class="text-muted mb-0">Luxury Experience</p>
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="form-card">
+                            <label class="form-label">Room Type</label>
+                            <select class="form-select" id="roomType">
+                                <option value="standard">Standard Room</option>
+                                <option value="deluxe">Deluxe Room</option>
+                                <option value="suite">Suite</option>
+                                <option value="family">Family Room</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-card">
+                            <label class="form-label">Additional Preferences</label>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-check mb-2">
+                                        <input class="form-check-input" type="checkbox" id="breakfastIncluded">
+                                        <label class="form-check-label" for="breakfastIncluded">Breakfast Included</label>
+                                    </div>
+                                    <div class="form-check mb-2">
+                                        <input class="form-check-input" type="checkbox" id="poolAccess">
+                                        <label class="form-check-label" for="poolAccess">Pool Access</label>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-check mb-2">
+                                        <input class="form-check-input" type="checkbox" id="freeWifi" checked>
+                                        <label class="form-check-label" for="freeWifi">Free WiFi</label>
+                                    </div>
+                                    <div class="form-check mb-2">
+                                        <input class="form-check-input" type="checkbox" id="seaView">
+                                        <label class="form-check-label" for="seaView">Sea View</label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Step 5: Activities -->
+                    <div class="wizard-step" id="step-5">
+                        <h4 class="mb-4">Activities & Experiences</h4>
+                        <p class="text-muted mb-4">Select the activities you're interested in. We'll customize your itinerary accordingly.</p>
+                        
+                        <div class="form-card">
+                            <div class="activity-checkbox">
+                                <input type="checkbox" id="sightseeing" class="form-check-input">
+                                <div>
+                                    <h6 class="mb-1">Sightseeing & Landmarks</h6>
+                                    <p class="text-muted mb-0">Visit famous landmarks and historical sites</p>
+                                </div>
+                            </div>
+                            
+                            <div class="activity-checkbox">
+                                <input type="checkbox" id="adventure" class="form-check-input">
+                                <div>
+                                    <h6 class="mb-1">Adventure Activities</h6>
+                                    <p class="text-muted mb-0">Hiking, water sports, and thrilling experiences</p>
+                                </div>
+                            </div>
+                            
+                            <div class="activity-checkbox">
+                                <input type="checkbox" id="shopping" class="form-check-input">
+                                <div>
+                                    <h6 class="mb-1">Shopping & Markets</h6>
+                                    <p class="text-muted mb-0">Local markets, malls, and souvenir shopping</p>
+                                </div>
+                            </div>
+                            
+                            <div class="activity-checkbox">
+                                <input type="checkbox" id="beaches" class="form-check-input">
+                                <div>
+                                    <h6 class="mb-1">Beaches & Relaxation</h6>
+                                    <p class="text-muted mb-0">Beach days, spa treatments, and relaxation</p>
+                                </div>
+                            </div>
+                            
+                            <div class="activity-checkbox">
+                                <input type="checkbox" id="museums" class="form-check-input">
+                                <div>
+                                    <h6 class="mb-1">Museums & Culture</h6>
+                                    <p class="text-muted mb-0">Art galleries, museums, and cultural experiences</p>
+                                </div>
+                            </div>
+                            
+                            <div class="activity-checkbox">
+                                <input type="checkbox" id="nightlife" class="form-check-input">
+                                <div>
+                                    <h6 class="mb-1">Nightlife & Entertainment</h6>
+                                    <p class="text-muted mb-0">Bars, clubs, shows, and evening activities</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="form-card">
+                            <label class="form-label">Estimated Additional Cost: $<span id="activityCost">0</span></label>
+                            <div class="progress mb-3">
+                                <div class="progress-bar" role="progressbar" style="width: 25%" id="activityProgress"></div>
+                            </div>
+                            <button class="btn btn-outline-primary">Add Custom Activities</button>
+                        </div>
+                    </div>
+                    
+                    <!-- Step 6: Traveler Details -->
+                    <div class="wizard-step" id="step-6">
+                        <h4 class="mb-4">Traveler Details</h4>
+                        
+                        <div class="row">
+                            <div class="col-md-6 mb-4">
+                                <div class="form-card">
+                                    <label class="form-label">Full Name</label>
+                                    <input type="text" class="form-control" placeholder="Enter your full name">
+                                </div>
+                            </div>
+                            <div class="col-md-6 mb-4">
+                                <div class="form-card">
+                                    <label class="form-label">Email Address</label>
+                                    <input type="email" class="form-control" placeholder="Enter your email">
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="form-card">
+                            <label class="form-label">Number of Travelers</label>
+                            <div class="row">
+                                <div class="col-md-3 mb-3">
+                                    <label>Adults</label>
+                                    <select class="form-select" id="adultsCount">
+                                        <option value="1">1</option>
+                                        <option value="2" selected>2</option>
+                                        <option value="3">3</option>
+                                        <option value="4">4</option>
+                                        <option value="5">5</option>
+                                        <option value="6">6</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-3 mb-3">
+                                    <label>Children</label>
+                                    <select class="form-select" id="childrenCount">
+                                        <option value="0" selected>0</option>
+                                        <option value="1">1</option>
+                                        <option value="2">2</option>
+                                        <option value="3">3</option>
+                                        <option value="4">4</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label>Special Requests</label>
+                                    <textarea class="form-control" rows="2" placeholder="Any special requirements or requests"></textarea>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="wizard-footer">
+                    <button class="btn btn-outline-secondary" id="prevBtn" disabled>Previous</button>
+                    <button class="btn btn-gradient" id="nextBtn">Next</button>
+                </div>
+            </div>
+            
+            <!-- Itinerary Generator (Initially Hidden) -->
+            <div class="mt-5 text-center" id="generateItinerarySection" style="display: none;">
+                <h3 class="mb-4">Ready to Generate Your Itinerary?</h3>
+                <p class="mb-4">Click the button below to create your personalized travel plan</p>
+                <button class="btn btn-gradient btn-lg" id="generateItineraryBtn">Generate My Itinerary</button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Itinerary Generator -->
+    <section class="itinerary-section section" id="itinerary-generator">
+        <div class="container">
+            <h2 class="section-title">Your Personalized Itinerary</h2>
+            <p class="text-center mb-5 lead" id="itinerary-subtitle">Here's your day-by-day trip plan customized just for you</p>
+            
+            <div class="row">
+                <div class="col-lg-8">
+                    <div class="itinerary-card">
+                        <h4 class="mb-4" id="itinerary-title">Your Trip Plan</h4>
+                        
+                        <!-- DAYS WILL BE DYNAMICALLY GENERATED HERE -->
+                        <div id="itinerary-days-container">
+                            <!-- JavaScript yahan days generate karega -->
+                        </div>
+                        
+                        <div class="text-center mt-4">
+                            <button class="btn btn-gradient me-3" onclick="downloadItinerary()">Download as PDF</button>
+                            <button class="btn btn-outline-light" onclick="shareItinerary()">Share Itinerary</button>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-lg-4">
+                    <div class="itinerary-card">
+                        <h5 class="mb-3">Quick Facts</h5>
+                        <div class="activity-item">
+                            <div><strong>Destination:</strong> <span id="summary-destination">Not selected</span></div>
+                        </div>
+                        <div class="activity-item">
+                            <div><strong>Duration:</strong> <span id="summary-duration">0 Days</span></div>
+                        </div>
+                        <div class="activity-item">
+                            <div><strong>Trip Type:</strong> <span id="summary-type">Not selected</span></div>
+                        </div>
+                        <div class="activity-item">
+                            <div><strong>Travelers:</strong> <span id="summary-travelers">0</span></div>
+                        </div>
+                        
+                        <h5 class="mt-4 mb-3">Hotel Suggestions</h5>
+                        <div id="hotel-suggestions">
+                            <!-- JavaScript yahan hotels generate karega -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Travel Cost Calculator -->
+    <section class="calculator-section section" id="cost-calculator">
+        <div class="container">
+            <h2 class="section-title">Travel Cost Calculator</h2>
+            <p class="text-center mb-5 lead">Estimate your trip expenses with our interactive calculator</p>
+            
+            <div class="row">
+                <div class="col-lg-8">
+                    <div class="calculator-card">
+                        <h4 class="mb-4">Calculate Your Trip Costs</h4>
+                        
+                        <div class="cost-item">
+                            <div>
+                                <h6>Flights</h6>
+                                <p class="text-muted mb-0">Round trip for 2 adults</p>
+                            </div>
+                            <div class="text-end">
+                                <h6>$1,200</h6>
+                                <div class="input-group input-group-sm mt-1" style="width: 120px;">
+                                    <input type="number" class="form-control" value="1200" min="0">
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="cost-item">
+                            <div>
+                                <h6>Accommodation</h6>
+                                <p class="text-muted mb-0">4 nights at 4-star hotel</p>
+                            </div>
+                            <div class="text-end">
+                                <h6>$800</h6>
+                                <div class="input-group input-group-sm mt-1" style="width: 120px;">
+                                    <input type="number" class="form-control" value="800" min="0">
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="cost-item">
+                            <div>
+                                <h6>Local Transport</h6>
+                                <p class="text-muted mb-0">Taxis, metro, and transfers</p>
+                            </div>
+                            <div class="text-end">
+                                <h6>$150</h6>
+                                <div class="input-group input-group-sm mt-1" style="width: 120px;">
+                                    <input type="number" class="form-control" value="150" min="0">
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="cost-item">
+                            <div>
+                                <h6>Activities & Tours</h6>
+                                <p class="text-muted mb-0">Desert safari, Burj Khalifa, etc.</p>
+                            </div>
+                            <div class="text-end">
+                                <h6>$300</h6>
+                                <div class="input-group input-group-sm mt-1" style="width: 120px;">
+                                    <input type="number" class="form-control" value="300" min="0">
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="cost-item">
+                            <div>
+                                <h6>Food & Dining</h6>
+                                <p class="text-muted mb-0">Restaurants and local cuisine</p>
+                            </div>
+                            <div class="text-end">
+                                <h6>$400</h6>
+                                <div class="input-group input-group-sm mt-1" style="width: 120px;">
+                                    <input type="number" class="form-control" value="400" min="0">
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="cost-item">
+                            <div>
+                                <h6>Visa & Insurance</h6>
+                                <p class="text-muted mb-0">Travel visa and health insurance</p>
+                            </div>
+                            <div class="text-end">
+                                <h6>$100</h6>
+                                <div class="input-group input-group-sm mt-1" style="width: 120px;">
+                                    <input type="number" class="form-control" value="100" min="0">
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="cost-total text-end">
+                            <div>Total Estimated Cost: <span id="totalCost">$2,950</span></div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-lg-4">
+                    <div class="calculator-card">
+                        <h5 class="mb-3">Budget Tips</h5>
+                        <div class="activity-item">
+                            <i class="fas fa-lightbulb text-warning me-3"></i>
+                            <div>Book flights 2-3 months in advance for best prices</div>
+                        </div>
+                        <div class="activity-item">
+                            <i class="fas fa-lightbulb text-warning me-3"></i>
+                            <div>Consider traveling during shoulder season for lower costs</div>
+                        </div>
+                        <div class="activity-item">
+                            <i class="fas fa-lightbulb text-warning me-3"></i>
+                            <div>Use public transportation to save on local travel</div>
+                        </div>
+                        <div class="activity-item">
+                            <i class="fas fa-lightbulb text-warning me-3"></i>
+                            <div>Look for hotel + flight packages for better deals</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Popular Trip Packages -->
+    <section class="section" id="popular-packages">
+        <div class="container">
+            <h2 class="section-title">Popular Trip Packages</h2>
+            <p class="text-center mb-5 lead">Choose from our curated travel packages or customize your own</p>
+            
+            <div class="row g-4">
+                <div class="col-md-6 col-lg-4 animate-on-scroll">
+                    <div class="package-card">
+                        <img src="./image/section 1 (1).jpeg" class="card-img-top" alt="Dubai Package">
+                        <div class="card-body">
+                            <h5 class="card-title">Dubai 5 Days</h5>
+                            <p class="card-text">Experience luxury in the city of gold with desert adventures and modern marvels</p>
+                            <div class="rating mb-3">
+                                <i class="fas fa-star text-warning"></i>
+                                <i class="fas fa-star text-warning"></i>
+                                <i class="fas fa-star text-warning"></i>
+                                <i class="fas fa-star text-warning"></i>
+                                <i class="fas fa-star-half-alt text-warning"></i>
+                                <span class="ms-2">4.7 (2.3k reviews)</span>
+                            </div>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <a href="#" class="btn btn-gradient">Customize</a>
+                                <span class="text-muted">5 Days</span>
+                            </div>
+                        </div>
+                        <div class="package-price">$899</div>
+                    </div>
+                </div>
+                
+                <div class="col-md-6 col-lg-4 animate-on-scroll">
+                    <div class="package-card">
+                        <img src="./image/section 1 (2).jpeg" class="card-img-top" alt="Turkey Package">
+                        <div class="card-body">
+                            <h5 class="card-title">Turkey 7 Days</h5>
+                            <p class="card-text">Discover Istanbul's rich history, stunning architecture, and delicious cuisine</p>
+                            <div class="rating mb-3">
+                                <i class="fas fa-star text-warning"></i>
+                                <i class="fas fa-star text-warning"></i>
+                                <i class="fas fa-star text-warning"></i>
+                                <i class="fas fa-star text-warning"></i>
+                                <i class="fas fa-star text-warning"></i>
+                                <span class="ms-2">5.0 (1.8k reviews)</span>
+                            </div>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <a href="#" class="btn btn-gradient">Customize</a>
+                                <span class="text-muted">7 Days</span>
+                            </div>
+                        </div>
+                        <div class="package-price">$699</div>
+                    </div>
+                </div>
+                
+                <div class="col-md-6 col-lg-4 animate-on-scroll">
+                    <div class="package-card">
+                        <img src="./image/section 1 (3).jpeg" class="card-img-top" alt="Maldives Package">
+                        <div class="card-body">
+                            <h5 class="card-title">Maldives Honeymoon</h5>
+                            <p class="card-text">Romantic getaway with overwater bungalows and pristine beaches</p>
+                            <div class="rating mb-3">
+                                <i class="fas fa-star text-warning"></i>
+                                <i class="fas fa-star text-warning"></i>
+                                <i class="fas fa-star text-warning"></i>
+                                <i class="fas fa-star text-warning"></i>
+                                <i class="far fa-star text-warning"></i>
+                                <span class="ms-2">4.5 (3.1k reviews)</span>
+                            </div>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <a href="#" class="btn btn-gradient">Customize</a>
+                                <span class="text-muted">7 Days</span>
+                            </div>
+                        </div>
+                        <div class="package-price">$1,299</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Interactive World Map -->
+    <section class="map-section section">
+        <div class="container">
+            <h2 class="section-title">Explore Destinations</h2>
+            <p class="text-center mb-5 lead">Click on any country to discover travel information</p>
+            
+            <div id="trip-map"></div>
+        </div>
+    </section>
+
+    <!-- Booking Summary -->
+    <section class="section">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-8">
+                    <h2 class="section-title text-start">Your Trip Summary</h2>
+                    <p class="mb-5">Review your selections before finalizing your trip</p>
+                    
+                    <div class="form-card">
+                        <h5 class="mb-3">Trip Details</h5>
+                        <div class="summary-item">
+                            <span>Destination:</span>
+                            <span id="summary-destination-display">Dubai, UAE</span>
+                        </div>
+                        <div class="summary-item">
+                            <span>Travel Dates:</span>
+                            <span id="summary-dates">Nov 15 - Nov 20, 2023</span>
+                        </div>
+                        <div class="summary-item">
+                            <span>Travelers:</span>
+                            <span id="summary-travelers-display">2 Adults</span>
+                        </div>
+                        <div class="summary-item">
+                            <span>Trip Type:</span>
+                            <span id="summary-type-display">Luxury</span>
+                        </div>
+                        <div class="summary-item">
+                            <span>Accommodation:</span>
+                            <span id="summary-hotel">4-Star Hotel</span>
+                        </div>
+                    </div>
+                    
+                    <div class="form-card">
+                        <h5 class="mb-3">Selected Activities</h5>
+                        <ul class="list-group list-group-flush">
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                Sightseeing & Landmarks
+                                <span class="badge bg-primary rounded-pill">Included</span>
+                            </li>
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                Desert Safari
+                                <span class="badge bg-primary rounded-pill">Included</span>
+                            </li>
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                Burj Khalifa Visit
+                                <span class="badge bg-primary rounded-pill">Included</span>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="col-lg-4">
+                    <div class="summary-card">
+                        <h4 class="mb-4">Cost Summary</h4>
+                        
+                        <div class="summary-item">
+                            <span>Package Cost:</span>
+                            <span>$2,100</span>
+                        </div>
+                        <div class="summary-item">
+                            <span>Activities:</span>
+                            <span>$300</span>
+                        </div>
+                        <div class="summary-item">
+                            <span>Taxes & Fees:</span>
+                            <span>$150</span>
+                        </div>
+                        
+                        <div class="summary-item">
+                            <strong>Total:</strong>
+                            <strong id="summary-total">$2,550</strong>
+                        </div>
+                        
+                        <div class="d-grid gap-2 mt-4">
+                            <button class="btn btn-gradient btn-lg">Save This Trip</button>
+                            <button class="btn btn-outline-primary">Download Details</button>
+                        </div>
+                        
+                        <div class="mt-4 p-3 bg-light rounded">
+                            <h6><i class="fas fa-shield-alt text-primary me-2"></i> Protected Booking</h6>
+                            <p class="small mb-0">Your trip is protected by our Best Price Guarantee and 24/7 customer support</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Testimonials & Trust Badges -->
+    <section class="section">
+        <div class="container">
+            <h2 class="section-title">What Travelers Say</h2>
+            <p class="text-center mb-5 lead">Join thousands of satisfied travelers who planned their perfect trips with us</p>
+            
+            <div class="row g-4">
+                <div class="col-md-6 col-lg-4 animate-on-scroll">
+                    <div class="testimonial-card">
+                        <div class="d-flex align-items-center mb-4">
+                            <img src="./image/section 1 (2).jpeg" class="testimonial-img" alt="Sarah Johnson">
+                            <div>
+                                <h5 class="mb-0">Sarah Johnson</h5>
+                                <p class="text-muted mb-0">Dubai Trip</p>
+                            </div>
+                        </div>
+                        <p class="mb-0">"The trip planner made our Dubai vacation absolutely perfect! Every detail was taken care of, and the itinerary was perfectly balanced between sightseeing and relaxation."</p>
+                    </div>
+                </div>
+                
+                <div class="col-md-6 col-lg-4 animate-on-scroll">
+                    <div class="testimonial-card">
+                        <div class="d-flex align-items-center mb-4">
+                            <img src="./image/section 1 (3).jpeg" class="testimonial-img" alt="Michael Chen">
+                            <div>
+                                <h5 class="mb-0">Michael Chen</h5>
+                                <p class="text-muted mb-0">Turkey Cultural Tour</p>
+                            </div>
+                        </div>
+                        <p class="mb-0">"I used the cost calculator and saved over $500 on my Turkey trip! The budget planning tools are incredibly accurate and helpful."</p>
+                    </div>
+                </div>
+                
+                <div class="col-md-6 col-lg-4 animate-on-scroll">
+                    <div class="testimonial-card">
+                        <div class="d-flex align-items-center mb-4">
+                            <img src="./image/section 2 (1).jpeg" class="testimonial-img" alt="Priya Patel">
+                            <div>
+                                <h5 class="mb-0">Priya Patel</h5>
+                                <p class="text-muted mb-0">Maldives Honeymoon</p>
+                            </div>
+                        </div>
+                        <p class="mb-0">"The itinerary generator created the most romantic honeymoon plan for us. Everything was perfectly timed and we didn't have to worry about any planning!"</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="trust-badges">
+                <div class="badge-item">
+                    <div class="badge-icon">
+                        <i class="fas fa-check-circle"></i>
+                    </div>
+                    <h6>Verified</h6>
+                    <p class="small text-muted">100% authentic reviews</p>
+                </div>
+                
+                <div class="badge-item">
+                    <div class="badge-icon">
+                        <i class="fas fa-tag"></i>
+                    </div>
+                    <h6>Best Price</h6>
+                    <p class="small text-muted">Guaranteed best deals</p>
+                </div>
+                
+                <div class="badge-item">
+                    <div class="badge-icon">
+                        <i class="fas fa-headset"></i>
+                    </div>
+                    <h6>24/7 Support</h6>
+                    <p class="small text-muted">Always here to help</p>
+                </div>
+                
+                <div class="badge-item">
+                    <div class="badge-icon">
+                        <i class="fas fa-users"></i>
+                    </div>
+                    <h6>100k+</h6>
+                    <p class="small text-muted">Happy travelers</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- FAQ Section -->
+    <section class="faq-section section">
+        <div class="container">
+            <h2 class="section-title">Frequently Asked Questions</h2>
+            <p class="text-center mb-5 lead">Find answers to common questions about trip planning</p>
+            
+            <div class="row justify-content-center">
+                <div class="col-lg-8">
+                    <div class="faq-card">
+                        <div class="faq-question">
+                            <h5>What documents do I need for international travel?</h5>
+                            <i class="fas fa-chevron-down"></i>
+                        </div>
+                        <div class="faq-answer">
+                            <p>You'll typically need a valid passport (with at least 6 months validity), visa for your destination country, travel insurance, and any required vaccination certificates. We provide detailed document checklists for each destination.</p>
+                        </div>
+                    </div>
+                    
+                    <div class="faq-card">
+                        <div class="faq-question">
+                            <h5>How far in advance should I plan my trip?</h5>
+                            <i class="fas fa-chevron-down"></i>
+                        </div>
+                        <div class="faq-answer">
+                            <p>For international trips, we recommend planning 3-6 months in advance to get the best flight and accommodation deals. For popular destinations during peak season, even earlier planning is advisable.</p>
+                        </div>
+                    </div>
+                    
+                    <div class="faq-card">
+                        <div class="faq-question">
+                            <h5>What is your refund policy?</h5>
+                            <i class="fas fa-chevron-down"></i>
+                        </div>
+                        <div class="faq-answer">
+                            <p>We offer flexible cancellation policies that vary by service provider. Most bookings can be cancelled up to 24-48 hours before travel for a full refund. Specific cancellation terms are clearly displayed before you confirm any booking.</p>
+                        </div>
+                    </div>
+                    
+                    <div class="faq-card">
+                        <div class="faq-question">
+                            <h5>Do you provide visa assistance?</h5>
+                            <i class="fas fa-chevron-down"></i>
+                        </div>
+                        <div class="faq-answer">
+                            <p>Yes, we provide comprehensive visa guidance including required documents, application procedures, and processing times. For certain destinations, we also offer visa processing services for an additional fee.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="cta-section">
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="col-lg-8 text-center">
+                    <h2 class="display-4 fw-bold mb-4">Ready to Plan Your Dream Trip?</h2>
+                    <p class="lead mb-5">Start creating your perfect itinerary with our advanced trip planner</p>
+                    <a href="#trip-planner" class="btn btn-gradient btn-lg me-3">Start Planning Now</a>
+                    <a href="contact.html" class="btn btn-outline-light btn-lg">Contact Our Experts</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-4 col-md-6 mb-5">
+                    <h3 class="footer-title">About TravelBuddy</h3>
+                    <p class="mb-4">Your trusted companion for unforgettable journeys around the world. We provide personalized travel experiences with cutting-edge technology and premium service.</p>
+                    <div class="social-links">
+                        <a href="#"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#"><i class="fab fa-twitter"></i></a>
+                        <a href="#"><i class="fab fa-instagram"></i></a>
+                        <a href="#"><i class="fab fa-linkedin-in"></i></a>
+                        <a href="#"><i class="fab fa-youtube"></i></a>
+                    </div>
+                </div>
+                <div class="col-lg-2 col-md-6 mb-5">
+                    <h3 class="footer-title">Quick Links</h3>
+                    <ul class="footer-links">
+                        <li><a href="index.html">Home</a></li>
+                        <li><a href="about.html">About</a></li>
+                        <li><a href="destinations.html">Destinations</a></li>
+                        <li><a href="plan-trip.html">Plan Trip</a></li>
+                        <li><a href="ai-chatbot.html">AI Chatbot</a></li>
+                        <li><a href="contact.html">Contact</a></li>
+                    </ul>
+                </div>
+                <div class="col-lg-3 col-md-6 mb-5">
+                    <h3 class="footer-title">Popular Destinations</h3>
+                    <ul class="footer-links">
+                        <li><a href="#">Dubai, UAE</a></li>
+                        <li><a href="#">Istanbul, Turkey</a></li>
+                        <li><a href="#">Maldives</a></li>
+                        <li><a href="#">Bali, Indonesia</a></li>
+                        <li><a href="#">Paris, France</a></li>
+                        <li><a href="#">Swat Valley, Pakistan</a></li>
+                    </ul>
+                </div>
+                <div class="col-lg-3 col-md-6 mb-5">
+                    <h3 class="footer-title">Newsletter</h3>
+                    <p class="mb-4">Subscribe for travel updates, exclusive offers, and destination guides.</p>
+                    <form>
+                        <div class="input-group mb-3">
+                            <input type="email" class="form-control" placeholder="Your Email" required>
+                            <button class="btn btn-gradient" type="submit">Subscribe</button>
+                        </div>
+                    </form>
+                    <p class="small mt-3">By subscribing, you agree to our Privacy Policy</p>
+                </div>
+            </div>
+        </div>
+        <div class="copyright">
+            <div class="container">
+                <div class="row">
+                    <div class="col-md-6 text-center text-md-start">
+                        <p>&copy; 2023 TravelBuddy. All Rights Reserved.</p>
+                    </div>
+                    <div class="col-md-6 text-center text-md-end">
+                        <p><a href="#" class="text-white-50">Privacy Policy</a> | <a href="#" class="text-white-50">Terms of Service</a></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+    <script>
+        // Navbar scroll effect
+        window.addEventListener('scroll', function() {
+            const navbar = document.querySelector('.navbar');
+            if (window.scrollY > 50) {
+                navbar.classList.add('scrolled');
+            } else {
+                navbar.classList.remove('scrolled');
+            }
+        });
+        
+        // Scroll animation
+        function animateOnScroll() {
+            const elements = document.querySelectorAll('.animate-on-scroll');
+            
+            elements.forEach(element => {
+                const elementTop = element.getBoundingClientRect().top;
+                const elementVisible = 150;
+                
+                if (elementTop < window.innerHeight - elementVisible) {
+                    element.classList.add('animated');
+                }
+            });
+        }
+        
+        // Initialize animations
+        window.addEventListener('scroll', animateOnScroll);
+        window.addEventListener('load', animateOnScroll);
+        
+        // Trip Planner Wizard
+        document.addEventListener('DOMContentLoaded', function() {
+            const steps = document.querySelectorAll('.wizard-step');
+            const stepIndicators = document.querySelectorAll('.step');
+            const prevBtn = document.getElementById('prevBtn');
+            const nextBtn = document.getElementById('nextBtn');
+            const generateItinerarySection = document.getElementById('generateItinerarySection');
+            const itinerarySection = document.getElementById('itinerary-generator');
+            let currentStep = 1;
+            
+            // Start Planning Button
+            document.getElementById('startPlanningBtn').addEventListener('click', function() {
+                document.getElementById('trip-planner').scrollIntoView({ behavior: 'smooth' });
+            });
+            
+            // Next Button
+            nextBtn.addEventListener('click', function() {
+                if (currentStep < 6) {
+                    // Validate current step before proceeding
+                    if (validateStep(currentStep)) {
+                        steps[currentStep - 1].classList.remove('active');
+                        stepIndicators[currentStep - 1].classList.remove('active');
+                        
+                        currentStep++;
+                        
+                        steps[currentStep - 1].classList.add('active');
+                        stepIndicators[currentStep - 1].classList.add('active');
+                        
+                        // Update button states
+                        prevBtn.disabled = currentStep === 1;
+                        
+                        if (currentStep === 6) {
+                            nextBtn.textContent = 'Complete';
+                        }
+                        
+                        // Show generate itinerary section on last step
+                        if (currentStep === 6) {
+                            generateItinerarySection.style.display = 'block';
+                        }
+                    }
+                } else {
+                    // Complete the wizard
+                    completeWizard();
+                }
+            });
+            
+            // Previous Button
+            prevBtn.addEventListener('click', function() {
+                if (currentStep > 1) {
+                    steps[currentStep - 1].classList.remove('active');
+                    stepIndicators[currentStep - 1].classList.remove('active');
+                    
+                    currentStep--;
+                    
+                    steps[currentStep - 1].classList.add('active');
+                    stepIndicators[currentStep - 1].classList.add('active');
+                    
+                    // Update button states
+                    prevBtn.disabled = currentStep === 1;
+                    nextBtn.textContent = 'Next';
+                    
+                    // Hide generate itinerary section if going back from last step
+                    if (currentStep < 6) {
+                        generateItinerarySection.style.display = 'none';
+                    }
+                }
+            });
+            
+            // Generate Itinerary Button
+            document.getElementById('generateItineraryBtn').addEventListener('click', function() {
+                generateDynamicItinerary();
+            });
+            
+            // Destination Cards Selection
+            document.querySelectorAll('.destination-card').forEach(card => {
+                card.addEventListener('click', function() {
+                    document.querySelectorAll('.destination-card').forEach(c => c.classList.remove('selected'));
+                    this.classList.add('selected');
+                });
+            });
+            
+            // Trip Type Cards Selection
+            document.querySelectorAll('.trip-type-card').forEach(card => {
+                card.addEventListener('click', function() {
+                    document.querySelectorAll('.trip-type-card').forEach(c => c.classList.remove('selected'));
+                    this.classList.add('selected');
+                });
+            });
+            
+            // Activity Checkboxes
+            document.querySelectorAll('.activity-checkbox').forEach(checkbox => {
+                checkbox.addEventListener('click', function() {
+                    const input = this.querySelector('input');
+                    input.checked = !input.checked;
+                    this.classList.toggle('selected', input.checked);
+                    updateActivityCost();
+                });
+            });
+            
+            // Budget Slider
+            const budgetSlider = document.getElementById('budgetSlider');
+            const budgetValue = document.getElementById('budgetValue');
+            
+            budgetSlider.addEventListener('input', function() {
+                budgetValue.textContent = this.value;
+            });
+            
+            // Date Calculation
+            const startDate = document.getElementById('startDate');
+            const endDate = document.getElementById('endDate');
+            const tripDuration = document.getElementById('tripDuration');
+            const seasonInfo = document.getElementById('seasonInfo');
+            
+            // Set default dates (today + 5 days)
+            const today = new Date();
+            const defaultEndDate = new Date();
+            defaultEndDate.setDate(today.getDate() + 5);
+            
+            startDate.valueAsDate = today;
+            endDate.valueAsDate = defaultEndDate;
+            updateTripDuration();
+            
+            startDate.addEventListener('change', updateTripDuration);
+            endDate.addEventListener('change', updateTripDuration);
+            
+            function updateTripDuration() {
+                if (startDate.value && endDate.value) {
+                    const start = new Date(startDate.value);
+                    const end = new Date(endDate.value);
+                    const diffTime = Math.abs(end - start);
+                    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1;
+                    
+                    tripDuration.textContent = diffDays + ' days';
+                    
+                    // Season information
+                    const month = start.getMonth();
+                    let season = '';
+                    if (month >= 2 && month <= 4) season = 'Spring';
+                    else if (month >= 5 && month <= 7) season = 'Summer';
+                    else if (month >= 8 && month <= 10) season = 'Autumn';
+                    else season = 'Winter';
+                    
+                    seasonInfo.textContent = `Traveling in ${season} - Great time to visit!`;
+                }
+            }
+            
+            // Cost Calculator
+            const costInputs = document.querySelectorAll('.calculator-card input');
+            const totalCost = document.getElementById('totalCost');
+            
+            costInputs.forEach(input => {
+                input.addEventListener('input', updateTotalCost);
+            });
+            
+            function updateTotalCost() {
+                let total = 0;
+                costInputs.forEach(input => {
+                    total += parseInt(input.value) || 0;
+                });
+                totalCost.textContent = '$' + total.toLocaleString();
+            }
+            
+            // Activity Cost Update
+            function updateActivityCost() {
+                let cost = 0;
+                document.querySelectorAll('.activity-checkbox input:checked').forEach(checkbox => {
+                    cost += 50; // $50 per activity
+                });
+                
+                document.getElementById('activityCost').textContent = cost;
+                
+                // Update progress bar
+                const progress = (cost / 300) * 100;
+                document.getElementById('activityProgress').style.width = Math.min(progress, 100) + '%';
+            }
+            
+            // FAQ Toggle
+            document.querySelectorAll('.faq-card').forEach(card => {
+                card.addEventListener('click', function() {
+                    this.classList.toggle('active');
+                });
+            });
+            
+            // Country-City Mapping
+            const countrySelect = document.getElementById('countrySelect');
+            const citySelect = document.getElementById('citySelect');
+            
+            const citiesByCountry = {
+                'uae': ['Dubai', 'Abu Dhabi', 'Sharjah'],
+                'turkey': ['Istanbul', 'Ankara', 'Antalya'],
+                'maldives': ['Malé', 'Addu City'],
+                'france': ['Paris', 'Nice', 'Lyon'],
+                'indonesia': ['Bali', 'Jakarta', 'Yogyakarta'],
+                'italy': ['Rome', 'Venice', 'Florence'],
+                'usa': ['New York', 'Los Angeles', 'Miami'],
+                'thailand': ['Bangkok', 'Phuket', 'Chiang Mai'],
+                'japan': ['Tokyo', 'Kyoto', 'Osaka'],
+                'australia': ['Sydney', 'Melbourne', 'Brisbane']
+            };
+            
+            countrySelect.addEventListener('change', function() {
+                const country = this.value;
+                citySelect.innerHTML = '<option value="">Select City</option>';
+                
+                if (country && citiesByCountry[country]) {
+                    citiesByCountry[country].forEach(city => {
+                        const option = document.createElement('option');
+                        option.value = city.toLowerCase();
+                        option.textContent = city;
+                        citySelect.appendChild(option);
+                    });
+                }
+            });
+            
+            // Initialize Map
+            const map = L.map('trip-map').setView([20, 0], 2);
+            
+            L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
+                attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
+                subdomains: 'abcd',
+                maxZoom: 20
+            }).addTo(map);
+            
+            // Add markers for popular destinations
+            const destinations = [
+                { name: "Dubai, UAE", coords: [25.2048, 55.2708], info: "Best months: Nov-Mar | Avg budget: $150/day" },
+                { name: "Istanbul, Turkey", coords: [41.0082, 28.9784], info: "Best months: Apr-May, Sep-Oct | Avg budget: $80/day" },
+                { name: "Maldives", coords: [3.2028, 73.2207], info: "Best months: Nov-Apr | Avg budget: $200/day" },
+                { name: "Paris, France", coords: [48.8566, 2.3522], info: "Best months: Apr-Jun, Oct-Nov | Avg budget: $120/day" },
+                { name: "Bali, Indonesia", coords: [-8.4095, 115.1889], info: "Best months: Apr-Oct | Avg budget: $50/day" }
+            ];
+            
+            destinations.forEach(dest => {
+                const marker = L.marker(dest.coords).addTo(map);
+                marker.bindPopup(`
+                    <div class="text-center">
+                        <h5>${dest.name}</h5>
+                        <p>${dest.info}</p>
+                        <button class="btn btn-sm btn-gradient" onclick="selectDestination('${dest.name}')">Plan Trip</button>
+                    </div>
+                `);
+            });
+            
+            // Validation function
+            function validateStep(step) {
+                // Add validation logic for each step
+                switch(step) {
+                    case 1:
+                        return document.querySelector('.destination-card.selected') !== null || 
+                               (countrySelect.value && citySelect.value);
+                    case 2:
+                        return startDate.value && endDate.value;
+                    case 3:
+                        return document.querySelector('.trip-type-card.selected') !== null;
+                    // Add more validation as needed
+                    default:
+                        return true;
+                }
+            }
+            
+            // Complete wizard function
+            function completeWizard() {
+                // Update summary with selected values
+                const selectedDestination = document.querySelector('.destination-card.selected');
+                if (selectedDestination) {
+                    document.getElementById('summary-destination-display').textContent = selectedDestination.querySelector('h6').textContent;
+                }
+                
+                if (startDate.value && endDate.value) {
+                    document.getElementById('summary-dates').textContent = 
+                        new Date(startDate.value).toLocaleDateString() + ' - ' + 
+                        new Date(endDate.value).toLocaleDateString();
+                }
+                
+                const selectedType = document.querySelector('.trip-type-card.selected');
+                if (selectedType) {
+                    document.getElementById('summary-type-display').textContent = selectedType.querySelector('h6').textContent;
+                }
+                
+                document.getElementById('summary-travelers-display').textContent = 
+                    document.getElementById('adultsCount').value + ' Adults, ' + 
+                    document.getElementById('childrenCount').value + ' Children';
+                
+                const hotelCategory = document.querySelector('input[name="hotelCategory"]:checked');
+                if (hotelCategory) {
+                    document.getElementById('summary-hotel').textContent = hotelCategory.value + '-Star Hotel';
+                }
+                
+                // Show success message
+                alert('Your trip has been planned successfully! Scroll down to see your itinerary.');
+                
+                // Scroll to itinerary section
+                document.getElementById('itinerary-generator').scrollIntoView({ behavior: 'smooth' });
+            }
+            
+            // DYNAMIC ITINERARY FUNCTION
+            function generateDynamicItinerary() {
+                // Get user selections
+                const destination = document.querySelector('.destination-card.selected') ? 
+                    document.querySelector('.destination-card.selected h6').textContent : 'Dubai, UAE';
+                
+                const startDate = document.getElementById('startDate').value;
+                const endDate = document.getElementById('endDate').value;
+                const tripType = document.querySelector('.trip-type-card.selected') ? 
+                    document.querySelector('.trip-type-card.selected h6').textContent : 'Luxury';
+                
+                const adults = document.getElementById('adultsCount').value;
+                const children = document.getElementById('childrenCount').value;
+                
+                // Calculate trip duration
+                let tripDays = 0;
+                if (startDate && endDate) {
+                    const start = new Date(startDate);
+                    const end = new Date(endDate);
+                    tripDays = Math.ceil((end - start) / (1000 * 60 * 60 * 24)) + 1;
+                } else {
+                    tripDays = 5; // Default
+                }
+
+                // Update summary
+                document.getElementById('summary-destination').textContent = destination;
+                document.getElementById('summary-duration').textContent = tripDays + ' Days';
+                document.getElementById('summary-type').textContent = tripType;
+                document.getElementById('summary-travelers').textContent = adults + ' Adults' + 
+                    (children > 0 ? ', ' + children + ' Children' : '');
+
+                // Generate itinerary title
+                document.getElementById('itinerary-title').textContent = 
+                    tripDays + '-Day ' + destination.split(',')[0] + ' ' + tripType + ' Trip';
+                
+                document.getElementById('itinerary-subtitle').textContent = 
+                    'Your personalized ' + tripDays + '-day itinerary for ' + destination;
+
+                // GENERATE DYNAMIC DAYS
+                const daysContainer = document.getElementById('itinerary-days-container');
+                daysContainer.innerHTML = ''; // Clear previous
+
+                for (let day = 1; day <= tripDays; day++) {
+                    const dayPlan = document.createElement('div');
+                    dayPlan.className = 'day-plan';
+                    
+                    let dayTitle = '';
+                    let activities = '';
+
+                    // Different activities for different days
+                    if (day === 1) {
+                        dayTitle = 'Day ' + day + ': Arrival & Check-in';
+                        activities = `
+                            <div class="activity-item">
+                                <div class="activity-time">2:00 PM</div>
+                                <div class="activity-details">
+                                    <h6 class="mb-1">Arrive at Destination</h6>
+                                    <p class="text-muted mb-0">Transfer to your hotel and check-in</p>
+                                </div>
+                            </div>
+                            <div class="activity-item">
+                                <div class="activity-time">6:00 PM</div>
+                                <div class="activity-details">
+                                    <h6 class="mb-1">Evening Exploration</h6>
+                                    <p class="text-muted mb-0">Relax and explore local area</p>
+                                </div>
+                            </div>
+                        `;
+                    } else if (day === tripDays) {
+                        dayTitle = 'Day ' + day + ': Departure';
+                        activities = `
+                            <div class="activity-item">
+                                <div class="activity-time">9:00 AM</div>
+                                <div class="activity-details">
+                                    <h6 class="mb-1">Last Minute Shopping</h6>
+                                    <p class="text-muted mb-0">Buy souvenirs and gifts</p>
+                                </div>
+                            </div>
+                            <div class="activity-item">
+                                <div class="activity-time">2:00 PM</div>
+                                <div class="activity-details">
+                                    <h6 class="mb-1">Check-out & Departure</h6>
+                                    <p class="text-muted mb-0">Transfer to airport for return flight</p>
+                                </div>
+                            </div>
+                        `;
+                    } else {
+                        dayTitle = 'Day ' + day + ': ' + getDayActivity(destination, tripType, day);
+                        activities = generateDayActivities(destination, tripType, day);
+                    }
+
+                    dayPlan.innerHTML = `
+                        <h5 class="text-warning">${dayTitle}</h5>
+                        ${activities}
+                    `;
+                    
+                    daysContainer.appendChild(dayPlan);
+                }
+
+                // GENERATE HOTEL SUGGESTIONS
+                const hotelContainer = document.getElementById('hotel-suggestions');
+                hotelContainer.innerHTML = '';
+                
+                const hotels = getHotelSuggestions(destination, tripType);
+                hotels.forEach(hotel => {
+                    const hotelItem = document.createElement('div');
+                    hotelItem.className = 'activity-item';
+                    hotelItem.innerHTML = `
+                        <div>
+                            <h6 class="mb-1">${hotel.name}</h6>
+                            <p class="text-muted mb-0">${hotel.description}</p>
+                        </div>
+                    `;
+                    hotelContainer.appendChild(hotelItem);
+                });
+
+                // Show itinerary section
+                document.getElementById('itinerary-generator').style.display = 'block';
+                document.getElementById('itinerary-generator').scrollIntoView({ behavior: 'smooth' });
+            }
+
+            // HELPER FUNCTIONS FOR DYNAMIC CONTENT
+            function getDayActivity(destination, tripType, day) {
+                const activities = {
+                    'Dubai, UAE': {
+                        'Luxury': ['Modern Marvels', 'Desert Adventure', 'Shopping Extravaganza', 'Beach Relaxation'],
+                        'Adventure': ['Desert Safari', 'Water Sports', 'Mountain Hiking', 'City Exploration'],
+                        'Family': ['Theme Parks', 'Aquarium Visit', 'Kids Activities', 'Family Dining']
+                    },
+                    'Istanbul, Turkey': {
+                        'Cultural': ['Historical Sites', 'Museum Tour', 'Bazaar Shopping', 'Cultural Show'],
+                        'Luxury': ['Palace Tour', 'Bosphorus Cruise', 'Fine Dining', 'Spa Experience']
+                    },
+                    // Add more destinations...
+                };
+
+                const destActivities = activities[destination] || activities['Dubai, UAE'];
+                const typeActivities = destActivities[tripType] || destActivities['Luxury'];
+                
+                return typeActivities[(day - 2) % typeActivities.length] || 'City Exploration';
+            }
+
+            function generateDayActivities(destination, tripType, day) {
+                // Different activities based on destination and trip type
+                let activities = '';
+                
+                if (destination.includes('Dubai')) {
+                    if (tripType === 'Luxury') {
+                        activities = `
+                            <div class="activity-item">
+                                <div class="activity-time">9:00 AM</div>
+                                <div class="activity-details">
+                                    <h6 class="mb-1">Burj Khalifa Visit</h6>
+                                    <p class="text-muted mb-0">Experience the world's tallest building</p>
+                                </div>
+                            </div>
+                            <div class="activity-item">
+                                <div class="activity-time">1:00 PM</div>
+                                <div class="activity-details">
+                                    <h6 class="mb-1">Luxury Lunch</h6>
+                                    <p class="text-muted mb-0">Fine dining at premium restaurant</p>
+                                </div>
+                            </div>
+                            <div class="activity-item">
+                                <div class="activity-time">4:00 PM</div>
+                                <div class="activity-details">
+                                    <h6 class="mb-1">Desert Safari</h6>
+                                    <p class="text-muted mb-0">Luxury desert camp experience</p>
+                                </div>
+                            </div>
+                        `;
+                    } else if (tripType === 'Adventure') {
+                        activities = `
+                            <div class="activity-item">
+                                <div class="activity-time">8:00 AM</div>
+                                <div class="activity-details">
+                                    <h6 class="mb-1">Dune Bashing</h6>
+                                    <p class="text-muted mb-0">Thrilling desert adventure</p>
+                                </div>
+                            </div>
+                            <div class="activity-item">
+                                <div class="activity-time">2:00 PM</div>
+                                <div class="activity-details">
+                                    <h6 class="mb-1">Water Sports</h6>
+                                    <p class="text-muted mb-0">Jet skiing and parasailing</p>
+                                </div>
+                            </div>
+                        `;
+                    }
+                } else if (destination.includes('Istanbul')) {
+                    activities = `
+                        <div class="activity-item">
+                            <div class="activity-time">9:00 AM</div>
+                            <div class="activity-details">
+                                <h6 class="mb-1">Hagia Sophia</h6>
+                                <p class="text-muted mb-0">Visit historical monument</p>
+                            </div>
+                        </div>
+                        <div class="activity-item">
+                            <div class="activity-time">1:00 PM</div>
+                            <div class="activity-details">
+                                <h6 class="mb-1">Grand Bazaar</h6>
+                                <p class="text-muted mb-0">Shopping and local cuisine</p>
+                            </div>
+                        </div>
+                    `;
+                }
+                
+                return activities || `
+                    <div class="activity-item">
+                        <div class="activity-time">9:00 AM</div>
+                        <div class="activity-details">
+                            <h6 class="mb-1">City Tour</h6>
+                            <p class="text-muted mb-0">Explore local attractions</p>
+                        </div>
+                    </div>
+                    <div class="activity-item">
+                        <div class="activity-time">2:00 PM</div>
+                        <div class="activity-details">
+                            <h6 class="mb-1">Local Experience</h6>
+                            <p class="text-muted mb-0">Immerse in local culture</p>
+                        </div>
+                    </div>
+                `;
+            }
+
+            function getHotelSuggestions(destination, tripType) {
+                const hotels = {
+                    'Dubai, UAE': [
+                        { name: "Burj Al Arab", description: "7-star luxury experience" },
+                        { name: "Atlantis The Palm", description: "Beach resort with waterpark" },
+                        { name: "Address Downtown", description: "Luxury city center hotel" }
+                    ],
+                    'Istanbul, Turkey': [
+                        { name: "Four Seasons", description: "Luxury Bosphorus view" },
+                        { name: "Ciragan Palace", description: "Historical palace hotel" }
+                    ]
+                };
+
+                return hotels[destination] || [
+                    { name: "Luxury Resort", description: "Premium accommodation" },
+                    { name: "Boutique Hotel", description: "Unique local experience" }
+                ];
+            }
+
+            function downloadItinerary() {
+                alert('Itinerary PDF download feature will be implemented!');
+            }
+
+            function shareItinerary() {
+                alert('Share itinerary feature will be implemented!');
+            }
+
+            function selectDestination(destName) {
+                // Auto-select destination when clicked from map
+                document.querySelectorAll('.destination-card').forEach(card => {
+                    if (card.querySelector('h6').textContent === destName) {
+                        card.click();
+                    }
+                });
+                document.getElementById('trip-planner').scrollIntoView({ behavior: 'smooth' });
+            }
+        });
+    </script>
+</body>
+</html>

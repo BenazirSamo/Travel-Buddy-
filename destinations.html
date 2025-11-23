@@ -1,0 +1,1414 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Destinations | TravelBuddy</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800&family=Playfair+Display:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #3498db;
+            --secondary: #2ecc71;
+            --dark: #2c3e50;
+            --light: #f8f9fa;
+            --danger: #e74c3c;
+            --warning: #f39c12;
+            --info: #1abc9c;
+            --transition: all 0.3s ease;
+        }
+
+        body {
+            font-family: 'Montserrat', sans-serif;
+            color: #333;
+            line-height: 1.6;
+            overflow-x: hidden;
+            padding-top: 72px;
+        }
+
+        h1, h2, h3, h4, h5 {
+            font-family: 'Playfair Display', serif;
+            font-weight: 700;
+        }
+
+        a {
+            text-decoration: none;
+            transition: var(--transition);
+        }
+
+        /* Navbar */
+        .navbar {
+            background: rgba(44, 62, 80, 0.95);
+            padding: 15px 0;
+            transition: var(--transition);
+            backdrop-filter: blur(10px);
+        }
+
+        .navbar.scrolled {
+            padding: 10px 0;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .navbar-brand {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: white;
+            display: flex;
+            align-items: center;
+        }
+
+        .logo {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 10px;
+            overflow: hidden;
+            border: 2px solid white;
+        }
+
+        .logo img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .nav-link {
+            font-weight: 500;
+            padding: 10px 15px !important;
+            color: rgba(255, 255, 255, 0.8) !important;
+            border-radius: 50px;
+            transition: var(--transition);
+        }
+
+        .nav-link:hover, .nav-link.active {
+            color: white !important;
+            background: rgba(255, 255, 255, 0.1);
+            transform: translateY(-2px);
+        }
+
+        /* Buttons */
+        .btn-gradient {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            border: none;
+            color: white;
+            font-weight: 600;
+            padding: 12px 30px;
+            border-radius: 50px;
+            transition: var(--transition);
+            position: relative;
+            overflow: hidden;
+            z-index: 1;
+        }
+
+        .btn-gradient:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px rgba(52, 152, 219, 0.3);
+        }
+
+        .btn-gradient:before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, var(--secondary), var(--primary));
+            opacity: 0;
+            z-index: -1;
+            transition: var(--transition);
+        }
+
+        .btn-gradient:hover:before {
+            opacity: 1;
+        }
+
+        /* Hero Section */
+        .destinations-hero {
+            background: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.7)), url('./image/wow1 (2).jpeg');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            color: white;
+            padding: 150px 0 100px;
+            position: relative;
+            min-height: 70vh;
+            display: flex;
+            align-items: center;
+            text-align: center;
+        }
+
+        .destinations-hero-title {
+            font-size: 3.5rem;
+            margin-bottom: 20px;
+            line-height: 1.2;
+            text-shadow: 2px 2px 8px rgba(0,0,0,0.5);
+            animation: fadeInUp 1s ease-out;
+        }
+
+        .destinations-hero-title span {
+            color: var(--secondary);
+            background: linear-gradient(45deg, var(--secondary), var(--primary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .destinations-hero-subtitle {
+            font-size: 1.4rem;
+            margin-bottom: 40px;
+            opacity: 0.9;
+            max-width: 700px;
+            margin-left: auto;
+            margin-right: auto;
+            animation: fadeInUp 1s ease-out 0.3s both;
+        }
+
+        .breadcrumb {
+            background: transparent;
+            justify-content: center;
+            margin-bottom: 0;
+        }
+
+        .breadcrumb-item a {
+            color: rgba(255, 255, 255, 0.8);
+        }
+
+        .breadcrumb-item.active {
+            color: white;
+        }
+
+        /* Sections */
+        .section {
+            padding: 100px 0;
+        }
+
+        .section-title {
+            position: relative;
+            padding-bottom: 15px;
+            margin-bottom: 50px;
+            text-align: center;
+            font-size: 2.5rem;
+        }
+
+        .section-title:after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80px;
+            height: 4px;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            border-radius: 3px;
+        }
+
+        /* Cards */
+        .card {
+            border: none;
+            border-radius: 15px;
+            overflow: hidden;
+            transition: var(--transition);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.08);
+            height: 100%;
+        }
+
+        .card:hover {
+            transform: translateY(-15px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+        }
+
+        .card-img-top {
+            width: 100%;
+            height: 250px;
+            object-fit: cover;
+            transition: var(--transition);
+        }
+
+        .card:hover .card-img-top {
+            transform: scale(1.1);
+        }
+
+        /* Destination Cards */
+        .destination-card .card-body {
+            padding: 25px;
+        }
+
+        .destination-card .price-tag {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: var(--secondary);
+            color: white;
+            padding: 8px 15px;
+            border-radius: 50px;
+            font-weight: 600;
+            font-size: 1.1rem;
+        }
+
+        .destination-card .rating {
+            color: var(--warning);
+            margin-bottom: 15px;
+        }
+
+        .popular-badge {
+            position: absolute;
+            top: 15px;
+            left: 15px;
+            background: var(--danger);
+            color: white;
+            padding: 5px 15px;
+            border-radius: 50px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            animation: pulse 2s infinite;
+        }
+
+        /* Featured Trips */
+        .featured-trips-section {
+            background: var(--dark);
+            color: white;
+        }
+
+        .featured-trip-card {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+            overflow: hidden;
+            transition: var(--transition);
+            height: 100%;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .featured-trip-card:hover {
+            transform: translateY(-10px);
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .trip-duration {
+            position: absolute;
+            top: 15px;
+            left: 15px;
+            background: rgba(0, 0, 0, 0.7);
+            color: white;
+            padding: 5px 15px;
+            border-radius: 50px;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        .trip-price {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: var(--secondary);
+            color: white;
+            padding: 8px 15px;
+            border-radius: 50px;
+            font-weight: 600;
+            font-size: 1.1rem;
+        }
+
+        /* Travel Guide Section */
+        .travel-guide-section {
+            background: linear-gradient(135deg, #f0f8ff 0%, #e6f7ff 100%);
+        }
+
+        .guide-card {
+            background: white;
+            border-radius: 15px;
+            overflow: hidden;
+            transition: var(--transition);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.08);
+            height: 100%;
+        }
+
+        .guide-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+        }
+
+        .guide-icon {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            font-size: 2rem;
+        }
+
+        /* Testimonials */
+        .testimonial-card {
+            background: white;
+            padding: 40px 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.05);
+            height: 100%;
+            position: relative;
+            transition: var(--transition);
+        }
+
+        .testimonial-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .testimonial-card:before {
+            content: '"';
+            position: absolute;
+            top: 20px;
+            left: 30px;
+            font-size: 5rem;
+            color: rgba(52, 152, 219, 0.1);
+            font-family: Georgia, serif;
+            line-height: 1;
+        }
+
+        .testimonial-img {
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin-right: 20px;
+            border: 3px solid var(--primary);
+            transition: var(--transition);
+        }
+
+        .testimonial-card:hover .testimonial-img {
+            transform: scale(1.1);
+            border-color: var(--secondary);
+        }
+
+        /* CTA Section */
+        .cta-section {
+            background: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), url('./image/other.png');
+            background-size: cover;
+            background-position: center;
+            color: white;
+            text-align: center;
+            padding: 120px 0;
+        }
+
+        /* Footer */
+        .footer {
+            background: var(--dark);
+            color: white;
+            padding: 80px 0 0;
+        }
+
+        .footer-title {
+            position: relative;
+            padding-bottom: 15px;
+            margin-bottom: 25px;
+            color: white;
+        }
+
+        .footer-title:after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 50px;
+            height: 3px;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            border-radius: 3px;
+        }
+
+        .footer-links li {
+            margin-bottom: 12px;
+            list-style: none;
+        }
+
+        .footer-links a {
+            color: rgba(255, 255, 255, 0.7);
+            transition: var(--transition);
+        }
+
+        .footer-links a:hover {
+            color: white;
+            padding-left: 5px;
+        }
+
+        .social-links {
+            display: flex;
+            gap: 15px;
+        }
+
+        .social-links a {
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: var(--transition);
+            font-size: 1.2rem;
+        }
+
+        .social-links a:hover {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            transform: translateY(-5px);
+        }
+
+        .copyright {
+            background: rgba(0, 0, 0, 0.2);
+            padding: 25px 0;
+            margin-top: 60px;
+            text-align: center;
+        }
+
+        /* Modal */
+        .destination-modal .modal-content {
+            border-radius: 15px;
+            overflow: hidden;
+            border: none;
+        }
+
+        .destination-modal .modal-header {
+            border-bottom: none;
+            padding: 25px 30px 0;
+        }
+
+        .destination-modal .modal-body {
+            padding: 0 30px 30px;
+        }
+
+        .gallery-slider {
+            border-radius: 10px;
+            overflow: hidden;
+            margin-bottom: 25px;
+        }
+
+        .destination-info {
+            margin-bottom: 25px;
+        }
+
+        .info-item {
+            display: flex;
+            margin-bottom: 10px;
+        }
+
+        .info-item i {
+            width: 20px;
+            margin-right: 10px;
+            color: var(--primary);
+        }
+
+        /* Animations */
+        .animate-on-scroll {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 0.8s ease;
+        }
+
+        .animate-on-scroll.animated {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Keyframe Animations */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes pulse {
+            0% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.05);
+            }
+            100% {
+                transform: scale(1);
+            }
+        }
+
+        @keyframes bounceIn {
+            0% {
+                opacity: 0;
+                transform: scale(0.3);
+            }
+            50% {
+                opacity: 1;
+                transform: scale(1.05);
+            }
+            70% {
+                transform: scale(0.9);
+            }
+            100% {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        /* Responsive */
+        @media (max-width: 992px) {
+            .destinations-hero-title {
+                font-size: 3rem;
+            }
+            
+            .section {
+                padding: 80px 0;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .navbar-brand {
+                font-size: 1.5rem;
+            }
+            
+            .destinations-hero {
+                padding: 120px 0 80px;
+            }
+            
+            .destinations-hero-title {
+                font-size: 2.5rem;
+            }
+            
+            .destinations-hero-subtitle {
+                font-size: 1.2rem;
+            }
+            
+            .section {
+                padding: 60px 0;
+            }
+            
+            .section-title {
+                font-size: 2rem;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .destinations-hero-title {
+                font-size: 2rem;
+            }
+            
+            .destinations-hero-subtitle {
+                font-size: 1rem;
+            }
+            
+            .btn-gradient {
+                padding: 10px 25px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation Bar -->
+    <nav class="navbar navbar-expand-lg navbar-dark fixed-top">
+        <div class="container">
+            <a class="navbar-brand" href="index.html">
+                <div class="logo">
+                    <img src="./image/logo.png" alt="TravelBuddy Logo">
+                </div>
+                TravelBuddy
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item"><a class="nav-link" href="index.html">Home</a></li>
+                    <li class="nav-item"><a class="nav-link" href="about.html">About</a></li>
+                    <li class="nav-item"><a class="nav-link active" href="destinations.html">Destinations</a></li>
+                    <li class="nav-item"><a class="nav-link" href="plan-trip.html">Plan Trip</a></li>                
+                    <li class="nav-item"><a class="nav-link" href="ai-chatbot.html">AI Chatbot</a></li>
+                    <li class="nav-item"><a class="nav-link" href="contact.html">Contact</a></li>
+                    <li class="nav-item"><a class="nav-link" href="feedback.html">Feedback</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="destinations-hero">
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="col-lg-10">
+                    <h1 class="destinations-hero-title">Explore The <span>World</span> With TravelBuddy</h1>
+                    <p class="destinations-hero-subtitle">Discover amazing destinations, plan your perfect trip, and create memories that last a lifetime</p>
+                    
+                    <nav aria-label="breadcrumb">
+                        <ol class="breadcrumb justify-content-center">
+                            <li class="breadcrumb-item"><a href="index.html">Home</a></li>
+                            <li class="breadcrumb-item active" aria-current="page">Destinations</li>
+                        </ol>
+                    </nav>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- All Destinations Section -->
+    <section class="section">
+        <div class="container">
+            <h2 class="section-title">Our Destinations</h2>
+            <p class="text-center mb-5 lead">Explore amazing travel destinations around the world</p>
+            
+            <div class="row g-4">
+                <!-- Destination 1 -->
+                <div class="col-md-6 col-lg-4 animate-on-scroll">
+                    <div class="card destination-card">
+                        <img src="./image/card 1 (1).jpeg" class="card-img-top" alt="Dubai">
+                        <div class="card-body">
+                            <h5 class="card-title">Dubai, UAE</h5>
+                            <p class="card-text">Experience luxury in the city of gold with modern architecture and desert adventures</p>
+                            <div class="rating">
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star-half-alt"></i>
+                                <span class="ms-2">4.7 (2.3k reviews)</span>
+                            </div>
+                            <a href="#" class="btn btn-gradient mt-3" data-bs-toggle="modal" data-bs-target="#destinationModal" data-destination="dubai">Explore</a>
+                        </div>
+                        <div class="price-tag">From $899</div>
+                        <div class="popular-badge">Popular</div>
+                    </div>
+                </div>
+                
+                <!-- Destination 2 -->
+                <div class="col-md-6 col-lg-4 animate-on-scroll">
+                    <div class="card destination-card">
+                        <img src="./image/card 1 (2).jpeg" class="card-img-top" alt="Turkey">
+                        <div class="card-body">
+                            <h5 class="card-title">Istanbul, Turkey</h5>
+                            <p class="card-text">Where East meets West with rich history, stunning architecture, and delicious cuisine</p>
+                            <div class="rating">
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <span class="ms-2">5.0 (1.8k reviews)</span>
+                            </div>
+                            <a href="#" class="btn btn-gradient mt-3" data-bs-toggle="modal" data-bs-target="#destinationModal" data-destination="istanbul">Explore</a>
+                        </div>
+                        <div class="price-tag">From $699</div>
+                    </div>
+                </div>
+                
+                <!-- Destination 3 -->
+                <div class="col-md-6 col-lg-4 animate-on-scroll">
+                    <div class="card destination-card">
+                        <img src="/image/card 1 (3).jpeg" class="card-img-top" alt="Maldives">
+                        <div class="card-body">
+                            <h5 class="card-title">Maldives</h5>
+                            <p class="card-text">Paradise on earth with crystal clear waters, luxury resorts, and pristine beaches</p>
+                            <div class="rating">
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="far fa-star"></i>
+                                <span class="ms-2">4.5 (3.1k reviews)</span>
+                            </div>
+                            <a href="#" class="btn btn-gradient mt-3" data-bs-toggle="modal" data-bs-target="#destinationModal" data-destination="maldives">Explore</a>
+                        </div>
+                        <div class="price-tag">From $1299</div>
+                        <div class="popular-badge">Trending</div>
+                    </div>
+                </div>
+                
+                <!-- Destination 4 -->
+                <div class="col-md-6 col-lg-4 animate-on-scroll">
+                    <div class="card destination-card">
+                        <img src="./image/card 1 (4).jpeg" class="card-img-top" alt="Paris">
+                        <div class="card-body">
+                            <h5 class="card-title">Paris, France</h5>
+                            <p class="card-text">The city of love with iconic landmarks, world-class museums, and exquisite cuisine</p>
+                            <div class="rating">
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star-half-alt"></i>
+                                <span class="ms-2">4.8 (4.2k reviews)</span>
+                            </div>
+                            <a href="#" class="btn btn-gradient mt-3" data-bs-toggle="modal" data-bs-target="#destinationModal" data-destination="paris">Explore</a>
+                        </div>
+                        <div class="price-tag">From $799</div>
+                    </div>
+                </div>
+                
+                <!-- Destination 5 -->
+                <div class="col-md-6 col-lg-4 animate-on-scroll">
+                    <div class="card destination-card">
+                        <img src="./image/card 1 (5).jpeg" class="card-img-top" alt="Swat">
+                        <div class="card-body">
+                            <h5 class="card-title">Swat Valley, Pakistan</h5>
+                            <p class="card-text">Breathtaking mountain scenery, lush valleys, and rich cultural heritage</p>
+                            <div class="rating">
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="far fa-star"></i>
+                                <span class="ms-2">4.4 (1.2k reviews)</span>
+                            </div>
+                            <a href="#" class="btn btn-gradient mt-3" data-bs-toggle="modal" data-bs-target="#destinationModal" data-destination="swat">Explore</a>
+                        </div>
+                        <div class="price-tag">From $399</div>
+                        <div class="popular-badge">Hidden Gem</div>
+                    </div>
+                </div>
+                
+                <!-- Destination 6 -->
+                <div class="col-md-6 col-lg-4 animate-on-scroll">
+                    <div class="card destination-card">
+                        <img src="./image/card 1 (6).jpeg" class="card-img-top" alt="Bali">
+                        <div class="card-body">
+                            <h5 class="card-title">Bali, Indonesia</h5>
+                            <p class="card-text">Tropical paradise with vibrant culture, stunning beaches, and spiritual retreats</p>
+                            <div class="rating">
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star-half-alt"></i>
+                                <span class="ms-2">4.6 (3.5k reviews)</span>
+                            </div>
+                            <a href="#" class="btn btn-gradient mt-3" data-bs-toggle="modal" data-bs-target="#destinationModal" data-destination="bali">Explore</a>
+                        </div>
+                        <div class="price-tag">From $899</div>
+                    </div>
+                </div>
+                
+                <!-- Destination 7 -->
+                <div class="col-md-6 col-lg-4 animate-on-scroll">
+                    <div class="card destination-card">
+                        <img src="./image/card 1 (7).jpeg" class="card-img-top" alt="Rome">
+                        <div class="card-body">
+                            <h5 class="card-title">Rome, Italy</h5>
+                            <p class="card-text">Eternal city with ancient ruins, Renaissance art, and delicious Italian cuisine</p>
+                            <div class="rating">
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star-half-alt"></i>
+                                <span class="ms-2">4.9 (3.8k reviews)</span>
+                            </div>
+                            <a href="#" class="btn btn-gradient mt-3" data-bs-toggle="modal" data-bs-target="#destinationModal" data-destination="rome">Explore</a>
+                        </div>
+                        <div class="price-tag">From $1099</div>
+                    </div>
+                </div>
+                
+                <!-- Destination 8 -->
+                <div class="col-md-6 col-lg-4 animate-on-scroll">
+                    <div class="card destination-card">
+                        <img src="./image/card 1 (8).jpeg" class="card-img-top" alt="Miami">
+                        <div class="card-body">
+                            <h5 class="card-title">Miami, USA</h5>
+                            <p class="card-text">Vibrant city with beautiful beaches, art deco architecture, and lively nightlife</p>
+                            <div class="rating">
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="far fa-star"></i>
+                                <span class="ms-2">4.3 (2.7k reviews)</span>
+                            </div>
+                            <a href="#" class="btn btn-gradient mt-3" data-bs-toggle="modal" data-bs-target="#destinationModal" data-destination="miami">Explore</a>
+                        </div>
+                        <div class="price-tag">From $799</div>
+                    </div>
+                </div>
+                
+                <!-- Destination 9 -->
+                <div class="col-md-6 col-lg-4 animate-on-scroll">
+                    <div class="card destination-card">
+                        <img src="./image/card 1 (9).jpeg" class="card-img-top" alt="Nepal">
+                        <div class="card-body">
+                            <h5 class="card-title">Kathmandu, Nepal</h5>
+                            <p class="card-text">Gateway to the Himalayas with ancient temples and breathtaking mountain views</p>
+                            <div class="rating">
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star-half-alt"></i>
+                                <span class="ms-2">4.7 (1.9k reviews)</span>
+                            </div>
+                            <a href="#" class="btn btn-gradient mt-3" data-bs-toggle="modal" data-bs-target="#destinationModal" data-destination="kathmandu">Explore</a>
+                        </div>
+                        <div class="price-tag">From $499</div>
+                    </div>
+                </div>
+                
+                <!-- Destination 10 -->
+                <div class="col-md-6 col-lg-4 animate-on-scroll">
+                    <div class="card destination-card">
+                        <img src="./image/card 1 (10).jpeg" class="card-img-top" alt="Tokyo">
+                        <div class="card-body">
+                            <h5 class="card-title">Tokyo, Japan</h5>
+                            <p class="card-text">Modern metropolis blending traditional culture with cutting-edge technology</p>
+                            <div class="rating">
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <span class="ms-2">4.9 (4.5k reviews)</span>
+                            </div>
+                            <a href="#" class="btn btn-gradient mt-3" data-bs-toggle="modal" data-bs-target="#destinationModal" data-destination="tokyo">Explore</a>
+                        </div>
+                        <div class="price-tag">From $1199</div>
+                    </div>
+                </div>
+                
+                <!-- Destination 11 -->
+                <div class="col-md-6 col-lg-4 animate-on-scroll">
+                    <div class="card destination-card">
+                        <img src="./image/card 1 (11).jpeg" class="card-img-top" alt="Bangkok">
+                        <div class="card-body">
+                            <h5 class="card-title">Bangkok, Thailand</h5>
+                            <p class="card-text">Vibrant city with ornate temples, floating markets, and incredible street food</p>
+                            <div class="rating">
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star-half-alt"></i>
+                                <span class="ms-2">4.6 (3.2k reviews)</span>
+                            </div>
+                            <a href="#" class="btn btn-gradient mt-3" data-bs-toggle="modal" data-bs-target="#destinationModal" data-destination="bangkok">Explore</a>
+                        </div>
+                        <div class="price-tag">From $599</div>
+                    </div>
+                </div>
+                
+                <!-- Destination 12 -->
+                <div class="col-md-6 col-lg-4 animate-on-scroll">
+                    <div class="card destination-card">
+                        <img src="./image/card 1 (12).jpeg" class="card-img-top" alt="Sydney">
+                        <div class="card-body">
+                            <h5 class="card-title">Sydney, Australia</h5>
+                            <p class="card-text">Iconic harbor city with Opera House, Harbour Bridge, and beautiful beaches</p>
+                            <div class="rating">
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <span class="ms-2">4.8 (3.9k reviews)</span>
+                            </div>
+                            <a href="#" class="btn btn-gradient mt-3" data-bs-toggle="modal" data-bs-target="#destinationModal" data-destination="sydney">Explore</a>
+                        </div>
+                        <div class="price-tag">From $1399</div>
+                    </div>
+                </div>
+                
+                <!-- Destination 13 -->
+                <div class="col-md-6 col-lg-4 animate-on-scroll">
+                    <div class="card destination-card">
+                        <img src="./image/card 1 (13).jpeg" class="card-img-top" alt="Cairo">
+                        <div class="card-body">
+                            <h5 class="card-title">Cairo, Egypt</h5>
+                            <p class="card-text">Ancient wonders including Pyramids of Giza and the Sphinx await you</p>
+                            <div class="rating">
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="far fa-star"></i>
+                                <span class="ms-2">4.4 (2.8k reviews)</span>
+                            </div>
+                            <a href="#" class="btn btn-gradient mt-3" data-bs-toggle="modal" data-bs-target="#destinationModal" data-destination="cairo">Explore</a>
+                        </div>
+                        <div class="price-tag">From $699</div>
+                    </div>
+                </div>
+                
+                <!-- Destination 14 -->
+                <div class="col-md-6 col-lg-4 animate-on-scroll">
+                    <div class="card destination-card">
+                        <img src="./image/card 1 (14).jpeg" class="card-img-top" alt="Barcelona">
+                        <div class="card-body">
+                            <h5 class="card-title">Barcelona, Spain</h5>
+                            <p class="card-text">Gaudi's architectural masterpieces and vibrant Mediterranean culture</p>
+                            <div class="rating">
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star-half-alt"></i>
+                                <span class="ms-2">4.7 (3.6k reviews)</span>
+                            </div>
+                            <a href="#" class="btn btn-gradient mt-3" data-bs-toggle="modal" data-bs-target="#destinationModal" data-destination="barcelona">Explore</a>
+                        </div>
+                        <div class="price-tag">From $849</div>
+                    </div>
+                </div>
+                
+                <!-- Destination 15 -->
+                <div class="col-md-6 col-lg-4 animate-on-scroll">
+                    <div class="card destination-card">
+                        <img src="./image/card 1 (15).jpeg" class="card-img-top" alt="Amsterdam">
+                        <div class="card-body">
+                            <h5 class="card-title">Amsterdam, Netherlands</h5>
+                            <p class="card-text">Canals, cycling culture, and world-class museums in a charming setting</p>
+                            <div class="rating">
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <span class="ms-2">4.8 (3.1k reviews)</span>
+                            </div>
+                            <a href="#" class="btn btn-gradient mt-3" data-bs-toggle="modal" data-bs-target="#destinationModal" data-destination="amsterdam">Explore</a>
+                        </div>
+                        <div class="price-tag">From $899</div>
+                    </div>
+                </div>
+                
+                <!-- Destination 16 -->
+                <div class="col-md-6 col-lg-4 animate-on-scroll">
+                    <div class="card destination-card">
+                        <img src="./image/card 1 (16).jpeg" class="card-img-top" alt="Rio">
+                        <div class="card-body">
+                            <h5 class="card-title">Rio de Janeiro, Brazil</h5>
+                            <p class="card-text">Stunning beaches, Christ the Redeemer, and vibrant carnival celebrations</p>
+                            <div class="rating">
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star-half-alt"></i>
+                                <span class="ms-2">4.6 (2.9k reviews)</span>
+                            </div>
+                            <a href="#" class="btn btn-gradient mt-3" data-bs-toggle="modal" data-bs-target="#destinationModal" data-destination="rio">Explore</a>
+                        </div>
+                        <div class="price-tag">From $999</div>
+                    </div>
+                </div>
+                
+                <!-- Destination 17 -->
+                <div class="col-md-6 col-lg-4 animate-on-scroll">
+                    <div class="card destination-card">
+                        <img src="./image/card 1 (17).jpeg" class="card-img-top" alt="Kyoto">
+                        <div class="card-body">
+                            <h5 class="card-title">Kyoto, Japan</h5>
+                            <p class="card-text">Traditional temples, geisha districts, and beautiful cherry blossoms</p>
+                            <div class="rating">
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <span class="ms-2">4.9 (3.4k reviews)</span>
+                            </div>
+                            <a href="#" class="btn btn-gradient mt-3" data-bs-toggle="modal" data-bs-target="#destinationModal" data-destination="kyoto">Explore</a>
+                        </div>
+                        <div class="price-tag">From $1099</div>
+                    </div>
+                </div>
+                
+                <!-- Destination 18 -->
+                <div class="col-md-6 col-lg-4 animate-on-scroll">
+                    <div class="card destination-card">
+                        <img src="/image/card 1 (18).jpeg" class="card-img-top" alt="London">
+                        <div class="card-body">
+                            <h5 class="card-title">London, UK</h5>
+                            <p class="card-text">Historic landmarks, royal palaces, and world-class theater in a global capital</p>
+                            <div class="rating">
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star-half-alt"></i>
+                                <span class="ms-2">4.7 (4.8k reviews)</span>
+                            </div>
+                            <a href="#" class="btn btn-gradient mt-3" data-bs-toggle="modal" data-bs-target="#destinationModal" data-destination="london">Explore</a>
+                        </div>
+                        <div class="price-tag">From $949</div>
+                    </div>
+                </div>
+                
+                <!-- Destination 19 -->
+                <div class="col-md-6 col-lg-4 animate-on-scroll">
+                    <div class="card destination-card">
+                        <img src="/image/card 1 (20).jpeg" class="card-img-top" alt="Singapore">
+                        <div class="card-body">
+                            <h5 class="card-title">Singapore</h5>
+                            <p class="card-text">Garden city with futuristic architecture, diverse cuisine, and clean streets</p>
+                            <div class="rating">
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <span class="ms-2">4.8 (3.7k reviews)</span>
+                            </div>
+                            <a href="#" class="btn btn-gradient mt-3" data-bs-toggle="modal" data-bs-target="#destinationModal" data-destination="singapore">Explore</a>
+                        </div>
+                        <div class="price-tag">From $799</div>
+                    </div>
+                </div>
+                
+                <!-- Destination 20 -->
+                <div class="col-md-6 col-lg-4 animate-on-scroll">
+                    <div class="card destination-card">
+                        <img src="/image/card 1 (21).jpeg" class="card-img-top" alt="Santorini">
+                        <div class="card-body">
+                            <h5 class="card-title">Santorini, Greece</h5>
+                            <p class="card-text">Stunning white-washed buildings, blue domes, and breathtaking sunsets</p>
+                            <div class="rating">
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <span class="ms-2">4.9 (4.1k reviews)</span>
+                            </div>
+                            <a href="#" class="btn btn-gradient mt-3" data-bs-toggle="modal" data-bs-target="#destinationModal" data-destination="santorini">Explore</a>
+                        </div>
+                        <div class="price-tag">From $1299</div>
+                        <div class="popular-badge">Romantic</div>
+                    </div>
+                </div>
+                <!-- Destination 21 -->
+<div class="col-md-6 col-lg-4 animate-on-scroll">
+    <div class="card destination-card">
+        <img src="./image/card 1 (22).jpeg" class="card-img-top" alt="Vietnam">
+        <div class="card-body">
+            <h5 class="card-title">Ha Long Bay, Vietnam</h5>
+            <p class="card-text">Thousands of limestone islands and emerald waters creating a breathtaking seascape</p>
+            <div class="rating">
+                <i class="fas fa-star"></i>
+                <i class="fas fa-star"></i>
+                <i class="fas fa-star"></i>
+                <i class="fas fa-star"></i>
+                <i class="fas fa-star-half-alt"></i>
+                <span class="ms-2">4.7 (3.2k reviews)</span>
+            </div>
+            <button class="btn btn-gradient mt-3" data-bs-toggle="modal" data-bs-target="#destinationModal" data-destination="vietnam">Explore</button>
+        </div>
+        <div class="price-tag">From $799</div>
+        <div class="popular-badge">UNESCO</div>
+    </div>
+</div>
+            </div>
+        </div>
+    </section>
+
+       <!-- Travel Guide Section (Replaces Map) -->
+    <section class="travel-guide-section section">
+        <div class="container">
+            <h2 class="section-title">Travel Planning Guide</h2>
+            <p class="text-center mb-5 lead">Essential tips and resources for your perfect journey</p>
+            
+            <div class="row g-4">
+                <div class="col-md-4 animate-on-scroll">
+                    <div class="guide-card text-center p-4">
+                        <div class="guide-icon">
+                            <i class="fas fa-passport"></i>
+                        </div>
+                        <h4>Visa & Documents</h4>
+                        <p>Complete guide to visa requirements, passport validity, and essential travel documents for all destinations.</p>
+                        <a href="#" class="btn btn-gradient mt-3">Learn More</a>
+                    </div>
+                </div>
+                
+                <div class="col-md-4 animate-on-scroll">
+                    <div class="guide-card text-center p-4">
+                        <div class="guide-icon">
+                            <i class="fas fa-suitcase-rolling"></i>
+                        </div>
+                        <h4>Packing Tips</h4>
+                        <p>Smart packing strategies, essential items checklist, and destination-specific packing recommendations.</p>
+                        <a href="#" class="btn btn-gradient mt-3">Learn More</a>
+                    </div>
+                </div>
+                
+                <div class="col-md-4 animate-on-scroll">
+                    <div class="guide-card text-center p-4">
+                        <div class="guide-icon">
+                            <i class="fas fa-dollar-sign"></i>
+                        </div>
+                        <h4>Budget Planning</h4>
+                        <p>Cost breakdowns, money-saving tips, and budget templates to plan your perfect trip within your means.</p>
+                        <a href="#" class="btn btn-gradient mt-3">Learn More</a>
+                    </div>
+                </div>
+                
+                <div class="col-md-4 animate-on-scroll">
+                    <div class="guide-card text-center p-4">
+                        <div class="guide-icon">
+                            <i class="fas fa-utensils"></i>
+                        </div>
+                        <h4>Local Cuisine</h4>
+                        <p>Discover must-try local dishes, food etiquette, and restaurant recommendations for each destination.</p>
+                        <a href="#" class="btn btn-gradient mt-3">Learn More</a>
+                    </div>
+                </div>
+                
+                <div class="col-md-4 animate-on-scroll">
+                    <div class="guide-card text-center p-4">
+                        <div class="guide-icon">
+                            <i class="fas fa-language"></i>
+                        </div>
+                        <h4>Language Guide</h4>
+                        <p>Essential phrases, local language tips, and communication apps to enhance your travel experience.</p>
+                        <a href="#" class="btn btn-gradient mt-3">Learn More</a>
+                    </div>
+                </div>
+                
+                <div class="col-md-4 animate-on-scroll">
+                    <div class="guide-card text-center p-4">
+                        <div class="guide-icon">
+                            <i class="fas fa-heartbeat"></i>
+                        </div>
+                        <h4>Health & Safety</h4>
+                        <p>Travel insurance, vaccination requirements, and safety tips to ensure a worry-free journey.</p>
+                        <a href="#" class="btn btn-gradient mt-3">Learn More</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Testimonials -->
+    <section class="section">
+        <div class="container">
+            <h2 class="section-title">Traveler Experiences</h2>
+            <p class="text-center mb-5 lead">See what our travelers say about their experiences</p>
+            
+            <div class="row g-4">
+                <div class="col-md-6 col-lg-4 animate-on-scroll">
+                    <div class="testimonial-card">
+                        <div class="d-flex align-items-center mb-4">
+                            <img src="/image/humans (1).jpeg" class="testimonial-img" alt="Sarah Johnson">
+                            <div>
+                                <h5 class="mb-0">Sarah Johnson</h5>
+                                <p class="text-muted mb-0">Visited Bali, Indonesia</p>
+                            </div>
+                        </div>
+                        <p class="mb-0">"TravelBuddy made our Bali trip absolutely perfect! The itinerary was well-planned, and we experienced the best of Balinese culture. The private villa recommendation was spot on!"</p>
+                    </div>
+                </div>
+                
+                <div class="col-md-6 col-lg-4 animate-on-scroll">
+                    <div class="testimonial-card">
+                        <div class="d-flex align-items-center mb-4">
+                            <img src=".//image/humans (2).jpeg" class="testimonial-img" alt="Michael Chen">
+                            <div>
+                                <h5 class="mb-0">Michael Chen</h5>
+                                <p class="text-muted mb-0">Visited Istanbul, Turkey</p>
+                            </div>
+                        </div>
+                        <p class="mb-0">"The cultural tour of Istanbul arranged by TravelBuddy was incredible. Our guide was knowledgeable, and we got to experience authentic Turkish cuisine. Highly recommended!"</p>
+                    </div>
+                </div>
+                
+                <div class="col-md-6 col-lg-4 animate-on-scroll">
+                    <div class="testimonial-card">
+                        <div class="d-flex align-items-center mb-4">
+                            <img src="./image/huma 1.jpeg" class="testimonial-img" alt="Priya Patel">
+                            <div>
+                                <h5 class="mb-0">Priya Patel</h5>
+                                <p class="text-muted mb-0">Visited Maldives</p>
+                            </div>
+                        </div>
+                        <p class="mb-0">"Our honeymoon in the Maldives was magical thanks to TravelBuddy. The overwater bungalow was breathtaking, and the snorkeling experience was unforgettable. Perfect romantic getaway!"</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="cta-section">
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="col-lg-8 text-center">
+                    <h2 class="display-4 fw-bold mb-4">Ready to Explore the World?</h2>
+                    <p class="lead mb-5">Start your journey today with personalized travel experiences</p>
+                    <a href="plan-trip.html" class="btn btn-gradient btn-lg me-3">Plan Your Trip</a>
+                    <a href="contact.html" class="btn btn-outline-light btn-lg">Contact Our Experts</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-4 col-md-6 mb-5">
+                    <h3 class="footer-title">About TravelBuddy</h3>
+                    <p class="mb-4">Your trusted companion for unforgettable journeys around the world. We provide personalized travel experiences with cutting-edge technology and premium service.</p>
+                    <div class="social-links">
+                        <a href="#"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#"><i class="fab fa-twitter"></i></a>
+                        <a href="#"><i class="fab fa-instagram"></i></a>
+                        <a href="#"><i class="fab fa-linkedin-in"></i></a>
+                        <a href="#"><i class="fab fa-youtube"></i></a>
+                    </div>
+                </div>
+                <div class="col-lg-2 col-md-6 mb-5">
+                    <h3 class="footer-title">Quick Links</h3>
+                    <ul class="footer-links">
+                        <li><a href="index.html">Home</a></li>
+                        <li><a href="about.html">About</a></li>
+                        <li><a href="destinations.html">Destinations</a></li>
+                        <li><a href="plan-trip.html">Plan Trip</a></li>
+                        <li><a href="ai-chatbot.html">AI Chatbot</a></li>
+                        <li><a href="contact.html">Contact</a></li>
+                    </ul>
+                </div>
+                <div class="col-lg-3 col-md-6 mb-5">
+                    <h3 class="footer-title">Popular Destinations</h3>
+                    <ul class="footer-links">
+                        <li><a href="#">Dubai, UAE</a></li>
+                        <li><a href="#">Istanbul, Turkey</a></li>
+                        <li><a href="#">Maldives</a></li>
+                        <li><a href="#">Bali, Indonesia</a></li>
+                        <li><a href="#">Paris, France</a></li>
+                        <li><a href="#">Swat Valley, Pakistan</a></li>
+                    </ul>
+                </div>
+                <div class="col-lg-3 col-md-6 mb-5">
+                    <h3 class="footer-title">Newsletter</h3>
+                    <p class="mb-4">Subscribe for travel updates, exclusive offers, and destination guides.</p>
+                    <form>
+                        <div class="input-group mb-3">
+                            <input type="email" class="form-control" placeholder="Your Email" required>
+                            <button class="btn btn-gradient" type="submit">Subscribe</button>
+                        </div>
+                    </form>
+                    <p class="small mt-3">By subscribing, you agree to our Privacy Policy</p>
+                </div>
+            </div>
+        </div>
+        <div class="copyright">
+            <div class="container">
+                <div class="row">
+                    <div class="col-md-6 text-center text-md-start">
+                        <p>&copy; 2023 TravelBuddy. All Rights Reserved.</p>
+                    </div>
+                    <div class="col-md-6 text-center text-md-end">
+                        <p><a href="#" class="text-white-50">Privacy Policy</a> | <a href="#" class="text-white-50">Terms of Service</a></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Navbar scroll effect
+        window.addEventListener('scroll', function() {
+            const navbar = document.querySelector('.navbar');
+            if (window.scrollY > 50) {
+                navbar.classList.add('scrolled');
+            } else {
+                navbar.classList.remove('scrolled');
+            }
+        });
+        
+        // Scroll animation
+        function animateOnScroll() {
+            const elements = document.querySelectorAll('.animate-on-scroll');
+            
+            elements.forEach(element => {
+                const elementTop = element.getBoundingClientRect().top;
+                const elementVisible = 150;
+                
+                if (elementTop < window.innerHeight - elementVisible) {
+                    element.classList.add('animated');
+                }
+            });
+        }
+        
+        // Initialize animations
+        window.addEventListener('scroll', animateOnScroll);
+        window.addEventListener('load', animateOnScroll);
+        
+        // Modal functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            const modalTitle = document.getElementById('modalDestinationTitle');
+            const modalDescription = document.getElementById('modalDestinationDescription');
+            const modalBestTime = document.getElementById('modalBestTime');
+            const modalAttractions = document.getElementById('modalAttractions');
+            
+            // Destination data for modal
+            const destinationData = {
+                dubai: {
+                    title: "Dubai, UAE",
+                    description: "Experience luxury in the city of gold with modern architecture and desert adventures. Dubai offers a unique blend of traditional Arabian culture and futuristic innovation.",
+                    bestTime: "November to March",
+                    attractions: ["Burj Khalifa", "Palm Jumeirah", "Dubai Mall", "Desert Safari", "Dubai Fountain"]
+                },
+                istanbul: {
+                    title: "Istanbul, Turkey",
+                    description: "Where East meets West with rich history, stunning architecture, and delicious cuisine. Istanbul bridges two continents and offers a fascinating cultural experience.",
+                    bestTime: "April to May, September to October",
+                    attractions: ["Hagia Sophia", "Blue Mosque", "Grand Bazaar", "Bosphorus Cruise", "Topkapi Palace"]
+                },// Destination data for modal - Add this to your existing destinationData object
+vietnam: {
+    title: "Ha Long Bay, Vietnam",
+    description: "A UNESCO World Heritage site featuring thousands of limestone karsts and islands in various shapes and sizes, rising from emerald waters creating a breathtaking seascape.",
+    bestTime: "October to April",
+    attractions: ["Cruise Tours", "Cave Exploration", "Kayaking", "Floating Villages", "Ti Top Island"]
+}
+                // Add more destination data as needed
+            };
+            
+            // Set up modal event listeners
+            document.querySelectorAll('[data-bs-target="#destinationModal"]').forEach(button => {
+                button.addEventListener('click', function() {
+                    const destination = this.getAttribute('data-destination');
+                    if (destinationData[destination]) {
+                        const data = destinationData[destination];
+                        modalTitle.textContent = data.title;
+                        modalDescription.textContent = data.description;
+                        modalBestTime.textContent = data.bestTime;
+                        
+                        // Clear and repopulate attractions
+                        modalAttractions.innerHTML = '';
+                        data.attractions.forEach(attraction => {
+                            const li = document.createElement('li');
+                            li.textContent = attraction;
+                            modalAttractions.appendChild(li);
+                        });
+                    }
+                });
+            });
+            
+            // Add loading animation to buttons
+            document.querySelectorAll('.btn-gradient').forEach(button => {
+                button.addEventListener('click', function(e) {
+                    if (this.href === '#' || !this.href) {
+                        e.preventDefault();
+                        const originalText = this.innerHTML;
+                        this.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span> Loading...';
+                        this.disabled = true;
+                        
+                        setTimeout(() => {
+                            this.innerHTML = originalText;
+                            this.disabled = false;
+                        }, 2000);
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>
